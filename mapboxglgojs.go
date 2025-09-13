@@ -4,9 +4,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"math"
 	"strings"
-	"text/template"
 
 	"github.com/paulmach/orb"
 )
