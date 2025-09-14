@@ -1,8 +1,10 @@
 # Mapbox GL JS Golang Wrapper
-Generate Mapbox GL JS HTML templates from Golang. For robust, scalable and fast mapping via serverside rendering.
+Generate Mapbox GL JS from Golang. For robust, scalable and fast mapping operations via serverside templates.
 
 ### Why
-- Serverside rendering (SSR) + Mapbox does not go hand in hand. Mapbox GL JS forces critical map logic away from the server and down into JS code in the browser. This can cause a lot of confusion, context switching, split focus and even duplication of logic between browser code and server. 
+- Serverside rendering (SSR) + Mapbox don't go hand in hand. The use of Mapbox GL JS in a SSR web app forces critical map logic away from the server and down into JS code in the browser. It could also require the SSR webserver to support non-hypermedia endpoints, to e.g. return a GeoJSON data response, which goes against the SSR concept.
+
+The aim of `mapboxglgojs` is to enable you to keep all map logic in the webserver, where it belongs.
 
 ### Details
 Uses `"github.com/paulmach/orb"` & `"github.com/paulmach/orb/geojson"` for Golang GeoJSON data, which supports fast JSON marshaling via `"github.com/json-iterator/go"`. Uses `"html/template"` for templating.

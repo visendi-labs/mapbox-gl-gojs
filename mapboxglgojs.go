@@ -4,72 +4,86 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"html/template"
+	htmltemplate "html/template"
 	"math"
+	"strconv"
 	"strings"
+	"text/template"
 
 	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/geojson"
 )
 
-type EnclosedSnippetCollection struct {
-	Children []EnclosedSnippetCollection
-	Template string
-	Data     any
+type RenderConfigOption int
+
+const (
+	UseCustomJsonMarshal RenderConfigOption = iota
+)
+
+type RenderConfig struct {
+	UseCustomJsonMarshal bool
 }
 
-func NewEnclosedSnippetCollection(template string, data any, c ...EnclosedSnippetCollection) EnclosedSnippetCollection {
-	return EnclosedSnippetCollection{
-		Children: c,
+type EnclosedSnippetCollectionRenderable func(RenderConfig) *EnclosedSnippetCollection
+
+type EnclosedSnippetCollection struct {
+	Template string
+	Data     map[string]string
+	Children []EnclosedSnippetCollectionRenderable
+}
+
+func NewEnclosedSnippetCollection(template string, data map[string]string, c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
+	a := EnclosedSnippetCollection{
 		Template: template,
 		Data:     data,
+		Children: c,
 	}
+	return EnclosedSnippetCollectionRenderable(func(rc RenderConfig) *EnclosedSnippetCollection {
+		return &a
+	})
 }
 
-func NewMapScript(c ...EnclosedSnippetCollection) EnclosedSnippetCollection {
+func NewMapScript(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
 	// Add script tag type as input? Like async, module or things like that
-	return NewEnclosedSnippetCollection(`<script>
-	{{.Children}}
-	</script>`, "", c...)
+	return NewEnclosedSnippetCollection(`<script>{{.Children }}</script>`, map[string]string{}, c...)
 }
 
-func NewMap(mc Map) EnclosedSnippetCollection {
+func NewMap(mc MapConfig) EnclosedSnippetCollectionRenderable {
 	j, err := json.Marshal(mc)
 	if err != nil {
 		panic(err)
 	}
 	return NewEnclosedSnippetCollection(
-		`
-		const map = new mapboxgl.Map({{.Data}});
-		`,
-		string(j),
+		`const map = new mapboxgl.Map({{ .Data.data }});`,
+		map[string]string{"data": string(j)},
 	)
 }
 
-func NewMapOnEventLayer(event, layer string, c ...EnclosedSnippetCollection) EnclosedSnippetCollection {
-	return NewEnclosedSnippetCollection("map.on(\"{{.Data.Event}}\", \"{{.Data.Layer}}\", () => { {{.Children}} });", struct {
-		Event, Layer string
-	}{
-		Event: event,
-		Layer: layer,
+func NewMapOnEventLayer(event, layer string, c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
+	return NewEnclosedSnippetCollection(`map.on("{{.Data.event}}", "{{.Data.layer}}", () => { {{- .Children -}} });`, map[string]string{
+		"event": event,
+		"layer": layer,
 	}, c...)
 }
 
-func NewMapOnEventLayerCursor(event, layer, cursor string) EnclosedSnippetCollection {
-	return NewMapOnEventLayer(event, layer, EnclosedSnippetCollection{
-		Template: `map.getCanvas().style.cursor = "{{.Data}}"`,
-		Data:     cursor,
-	})
+func NewMapOnEventLayerCursor(event, layer, cursor string) EnclosedSnippetCollectionRenderable {
+	return NewMapOnEventLayer(event, layer, EnclosedSnippetCollectionRenderable(func(rc RenderConfig) *EnclosedSnippetCollection {
+		return &EnclosedSnippetCollection{
+			Template: `map.getCanvas().style.cursor = "{{.Data.data}}"`,
+			Data:     map[string]string{"data": cursor},
+		}
+	}))
 }
 
-func NewConsoleWarn(log string) EnclosedSnippetCollection {
-	return NewEnclosedSnippetCollection("console.warn({{.Data}});", log)
+func NewConsoleWarn(log string) EnclosedSnippetCollectionRenderable {
+	return NewEnclosedSnippetCollection("console.warn({{.Data.data}});", map[string]string{"data": log})
 }
 
-func NewConsoleLog(log string) EnclosedSnippetCollection {
-	return NewEnclosedSnippetCollection("console.log({{.Data}});", log)
+func NewConsoleLog(log string) EnclosedSnippetCollectionRenderable {
+	return NewEnclosedSnippetCollection("console.log({{.Data.data}});", map[string]string{"data": log})
 }
 
-func NewMapAddImageCircle(name string, size int) EnclosedSnippetCollection {
+func NewMapAddImageCircle(name string, size int) EnclosedSnippetCollectionRenderable {
 	circleImg := []byte{}
 	for i := 0; i < size; i++ {
 		for j := 0; j < size; j++ {
@@ -87,7 +101,7 @@ func NewMapAddImageCircle(name string, size int) EnclosedSnippetCollection {
 	return NewMapAddImage(name, base64.StdEncoding.EncodeToString(circleImg), size, size)
 }
 
-func NewMapAddImageRectangle(name string, height, width int) EnclosedSnippetCollection {
+func NewMapAddImageRectangle(name string, height, width int) EnclosedSnippetCollectionRenderable {
 	squareImg := []byte{}
 	for i := 0; i < height; i++ {
 		for j := 0; j < width; j++ {
@@ -101,32 +115,45 @@ func NewMapAddImageRectangle(name string, height, width int) EnclosedSnippetColl
 	return NewMapAddImage(name, base64.StdEncoding.EncodeToString(squareImg), height, width)
 }
 
-func NewMapAddImage(name, imgBase64 string, width, height int) EnclosedSnippetCollection {
+func NewMapAddImage(name, imgBase64 string, width, height int) EnclosedSnippetCollectionRenderable {
 	return NewEnclosedSnippetCollection(`
-	map.addImage("{{.Data.Name}}", {width:{{.Data.Width}},height:{{.Data.Height}},data:Uint8Array.fromBase64("{{.Data.Img}}") });
-	`, struct {
-		Name, Img     string
-		Width, Height int
-	}{
-		Name:   name,
-		Img:    imgBase64,
-		Width:  width,
-		Height: height,
+	map.addImage("{{.Data.name}}",{width:{{.Data.width}},height:{{.Data.height}},data:Uint8Array.fromBase64("{{.Data.Img}}") });
+	`, map[string]string{
+		"name":   name,
+		"img":    imgBase64,
+		"width":  strconv.Itoa(width),
+		"height": strconv.Itoa(height),
 	})
 }
 
-func NewMapOnEvent(event string, c ...EnclosedSnippetCollection) EnclosedSnippetCollection {
-	return NewEnclosedSnippetCollection(`
-	map.on("{{.Data}}", () => { {{.Children}} });
-	`, event, c...)
+func NewMapOnEvent(event string, c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
+	return NewEnclosedSnippetCollection(`map.on("{{.Data.data}}", () => { {{- .Children -}} });`, map[string]string{"data": event}, c...)
 }
 
-func NewMapOnLoad(c ...EnclosedSnippetCollection) EnclosedSnippetCollection {
+func NewMapOnLoad(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
 	return NewMapOnEvent("load", c...)
 }
 
-func (esc *EnclosedSnippetCollection) Render() (string, error) {
-	t, err := template.New("page").Parse(esc.Template)
+func (esc EnclosedSnippetCollectionRenderable) MustRender(config RenderConfig) htmltemplate.JS {
+	s, err := esc.Render(config)
+	if err != nil {
+		panic(err)
+	}
+	return s
+}
+
+func (esc EnclosedSnippetCollectionRenderable) Render(config RenderConfig) (htmltemplate.JS, error) {
+	c := esc(config)
+	t, err := template.New("page").Funcs(template.FuncMap{
+		// "safeJS": func(input any) template.JS {
+		// 	if s, ok := input.(string); ok {
+		// 		return template.JS(s)
+		// 	} else if s, ok := input.(template.JS); ok {
+		// 		return s
+		// 	}
+		// 	return template.JS("")
+		// },
+	}).Parse(c.Template)
 	if err != nil {
 		return "", err
 	}
@@ -134,8 +161,8 @@ func (esc *EnclosedSnippetCollection) Render() (string, error) {
 	b := strings.Builder{}
 	children := strings.Builder{}
 
-	for _, sc := range esc.Children {
-		scb, err := sc.Render()
+	for _, sc := range c.Children {
+		scb, err := sc.Render(config) // .Render()
 		if err != nil {
 			return "", err
 		}
@@ -143,23 +170,14 @@ func (esc *EnclosedSnippetCollection) Render() (string, error) {
 	}
 	if err := t.Execute(&b, struct {
 		Children string
-		Data     any
+		Data     map[string]string
 	}{
 		Children: children.String(),
-		Data:     esc.Data,
+		Data:     c.Data,
 	}); err != nil {
 		return "", err
 	}
-	return b.String(), nil
-}
-
-type MapLayout struct {
-	LineJoin         string `json:"line-join,omitempty"`
-	LineCap          string `json:"line-cap,omitempty"`
-	IconImage        string `json:"icon-image,omitempty"`
-	TextField        string `json:"text-field,omitempty"`
-	IconAllowOverlap bool   `json:"icon-allow-overlap,omitempty"`
-	IconOffset       any    `json:"icon-offset,omitempty"`
+	return htmltemplate.JS(b.String()), nil
 }
 
 type MapLayer struct {
@@ -175,26 +193,35 @@ type MapSource struct {
 	Data any    `json:"data,omitempty"`
 }
 
-func NewMapAddSource(ms MapSource) EnclosedSnippetCollection {
-	j, err := json.MarshalIndent(ms, "", "\t")
+func NewMapAddSourceFeatureCollection(fc geojson.FeatureCollection) EnclosedSnippetCollectionRenderable {
+	return NewMapAddSource(fc)
+}
+
+func NewMapAddSource(ms any) EnclosedSnippetCollectionRenderable {
+	j, err := json.Marshal(ms) // Indent(ms, "", "\t")
 	if err != nil {
 		panic(err)
 	}
 	return NewEnclosedSnippetCollection(
-		"map.addSource({{.Data}});",
-		string(j),
+		"map.addSource({{.Data.data}});",
+		map[string]string{"data": string(j)},
 	)
 }
 
-func NewMapAddLayer(ml MapLayer) EnclosedSnippetCollection {
-	j, err := json.MarshalIndent(ml, "", "\t")
-	if err != nil {
-		panic(err)
+func NewMapAddLayer(ml MapLayer) EnclosedSnippetCollectionRenderable {
+	return func(rc RenderConfig) *EnclosedSnippetCollection {
+		// if rc.UseCustomJsonMarshal {
+
+		// }
+		j, err := json.Marshal(ml) // Indent(ml, "", "\t")
+		if err != nil {
+			panic(err)
+		}
+		return NewEnclosedSnippetCollection(
+			"map.addLayer({{.Data.data}});",
+			map[string]string{"data": string(j)},
+		)(rc)
 	}
-	return NewEnclosedSnippetCollection(
-		"map.addLayer({{.Data}});",
-		string(j),
-	)
 }
 
 type Map struct {
