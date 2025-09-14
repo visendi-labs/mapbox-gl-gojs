@@ -117,7 +117,7 @@ func NewMapAddImageRectangle(name string, height, width int) EnclosedSnippetColl
 
 func NewMapAddImage(name, imgBase64 string, width, height int) EnclosedSnippetCollectionRenderable {
 	return NewEnclosedSnippetCollection(`
-	map.addImage("{{.Data.name}}",{width:{{.Data.width}},height:{{.Data.height}},data:Uint8Array.fromBase64("{{.Data.Img}}") });
+	map.addImage("{{.Data.name}}",{width:{{.Data.width}},height:{{.Data.height}},data:Uint8Array.fromBase64("{{.Data.img}}") });
 	`, map[string]string{
 		"name":   name,
 		"img":    imgBase64,
