@@ -8,7 +8,7 @@ import (
 
 func main() {
 	s, err := mapboxglgojs.NewMapScript(
-		mapboxglgojs.NewMap(mapboxglgojs.MapConfig{
+		mapboxglgojs.NewMap(mapboxglgojs.Map{
 			Container:   "123",
 			AccessToken: "token",
 		}),

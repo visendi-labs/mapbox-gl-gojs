@@ -10,7 +10,6 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 )
 
@@ -48,7 +47,7 @@ func NewMapScript(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetColle
 	return NewEnclosedSnippetCollection(`<script>{{.Children }}</script>`, map[string]string{}, c...)
 }
 
-func NewMap(mc MapConfig) EnclosedSnippetCollectionRenderable {
+func NewMap(mc Map) EnclosedSnippetCollectionRenderable {
 	j, err := json.Marshal(mc)
 	if err != nil {
 		panic(err)
@@ -116,14 +115,14 @@ func NewMapAddImageRectangle(name string, height, width int) EnclosedSnippetColl
 }
 
 func NewMapAddImage(name, imgBase64 string, width, height int) EnclosedSnippetCollectionRenderable {
-	return NewEnclosedSnippetCollection(`
-	map.addImage("{{.Data.name}}",{width:{{.Data.width}},height:{{.Data.height}},data:Uint8Array.fromBase64("{{.Data.img}}") });
-	`, map[string]string{
-		"name":   name,
-		"img":    imgBase64,
-		"width":  strconv.Itoa(width),
-		"height": strconv.Itoa(height),
-	})
+	return NewEnclosedSnippetCollection(
+		`map.addImage("{{.Data.name}}",{width:{{.Data.width}},height:{{.Data.height}},data:Uint8Array.fromBase64("{{.Data.img}}") });`,
+		map[string]string{
+			"name":   name,
+			"img":    imgBase64,
+			"width":  strconv.Itoa(width),
+			"height": strconv.Itoa(height),
+		})
 }
 
 func NewMapOnEvent(event string, c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
@@ -222,12 +221,4 @@ func NewMapAddLayer(ml MapLayer) EnclosedSnippetCollectionRenderable {
 			map[string]string{"data": string(j)},
 		)(rc)
 	}
-}
-
-type Map struct {
-	Container   string    `json:"container,omitempty"`
-	Style       string    `json:"style,omitempty"`
-	Center      orb.Point `json:"center,omitempty"`
-	Zoom        float64   `json:"zoom,omitempty"`
-	AccessToken string    `json:"accessToken,omitempty"`
 }

@@ -113,7 +113,7 @@ type MapLayout struct {
 	Visibility string `json:"visibility,omitempty"` // visible, none
 }
 
-type MapConfig struct {
+type Map struct {
 	// Required
 	Container   string    `json:"container,omitempty"` // HTML element id or reference
 	Style       string    `json:"style,omitempty"`     // Style URL or JSON object
@@ -151,4 +151,26 @@ type MapConfig struct {
 
 	// Misc
 	Hash bool `json:"hash,omitempty"` // Track position in URL hash
+
+	// Your custom config
+	Config MapConfig `json:"config,omitempty"`
+}
+
+type MapConfig struct {
+	Basemap BasemapConfig `json:"basemap,omitempty"`
+}
+
+type BasemapConfig struct {
+	Theme                  string `json:"theme,omitempty"`
+	Show3DObjects          bool   `json:"show3dObjects,omitempty"`
+	ShowPointOfInterest    bool   `json:"showPointOfInterestLabels,omitempty"`
+	ShowPlaceLabels        bool   `json:"showPlaceLabels,omitempty"`
+	ShowRoadLabels         bool   `json:"showRoadLabels,omitempty"`
+	ShowTransitLabels      bool   `json:"showTransitLabels,omitempty"`
+	ShowAdminBoundaries    bool   `json:"showAdminBoundaries,omitempty"`
+	ShowBuildingExtrusions bool   `json:"showBuildingExtrusions,omitempty"`
+	ShowRoads              bool   `json:"showRoads,omitempty"`
+	ShowTransit            bool   `json:"showTransit,omitempty"`
+	ShowTerrain            bool   `json:"showTerrain,omitempty"`
+	ShowWater              bool   `json:"showWater,omitempty"`
 }
