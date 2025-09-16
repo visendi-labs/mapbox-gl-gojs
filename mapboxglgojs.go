@@ -19,6 +19,7 @@ const (
 	UseCustomJsonMarshal RenderConfigOption = iota
 )
 
+// TODO: Add option to say what the map object should be called (mapboxgljs.Map())
 type RenderConfig struct {
 	UseCustomJsonMarshal bool
 	KeepWhitespace       bool
@@ -83,29 +84,30 @@ func NewConsoleLog(log string) EnclosedSnippetCollectionRenderable {
 	return NewEnclosedSnippetCollection("console.log({{.Data.data}});", map[string]string{"data": log})
 }
 
-func NewMapAddImageCircle(name string, size int) EnclosedSnippetCollectionRenderable {
+func NewMapAddImageCircle(name string, rad int, border float64) EnclosedSnippetCollectionRenderable {
 	circleImg := []byte{}
-	for i := 0; i < size; i++ {
-		for j := 0; j < size; j++ {
-			c := math.Pow(float64(i)-float64(size)/2, 2) + math.Pow(float64(j)-float64(size)/2, 2)
-			r := math.Pow(float64(size)/2, 2)
-			if c < r {
-				circleImg = append(circleImg, 60, 150, 200, 255)
-			} else if c > r-20 && c < r+20 {
+	for i := 0; i < rad*2; i++ {
+		for j := 0; j < rad*2; j++ {
+			c := math.Pow(float64(i)-float64(rad), 2) + math.Pow(float64(j)-float64(rad), 2)
+			r := math.Pow(float64(rad), 2)
+			b := math.Pow(float64(rad)-border, 2)
+			if c > b && c < r {
 				circleImg = append(circleImg, 30, 30, 30, 255)
+			} else if c < r {
+				circleImg = append(circleImg, 60, 150, 200, 255)
 			} else {
 				circleImg = append(circleImg, 0, 0, 0, 0)
 			}
 		}
 	}
-	return NewMapAddImage(name, base64.StdEncoding.EncodeToString(circleImg), size, size)
+	return NewMapAddImage(name, base64.StdEncoding.EncodeToString(circleImg), rad*2, rad*2)
 }
 
-func NewMapAddImageRectangle(name string, height, width int) EnclosedSnippetCollectionRenderable {
+func NewMapAddImageRectangle(name string, height, width, border int) EnclosedSnippetCollectionRenderable {
 	squareImg := []byte{}
 	for i := 0; i < height; i++ {
 		for j := 0; j < width; j++ {
-			if j == 0 || i == 0 || j == width-1 || i == height-1 {
+			if j < border || i < border || j > width-border-1 || i > height-border-1 {
 				squareImg = append(squareImg, 30, 30, 30, 255)
 			} else {
 				squareImg = append(squareImg, 60, 200, 150, 255)
@@ -115,7 +117,7 @@ func NewMapAddImageRectangle(name string, height, width int) EnclosedSnippetColl
 	return NewMapAddImage(name, base64.StdEncoding.EncodeToString(squareImg), height, width)
 }
 
-func NewMapAddImage(name, imgBase64 string, width, height int) EnclosedSnippetCollectionRenderable {
+func NewMapAddImage(name, imgBase64 string, height, width int) EnclosedSnippetCollectionRenderable {
 	return NewEnclosedSnippetCollection(
 		`map.addImage("{{.Data.name}}",{width:{{.Data.width}},height:{{.Data.height}},data:Uint8Array.fromBase64("{{.Data.img}}") });`,
 		map[string]string{
@@ -293,6 +295,18 @@ func NewHtmxAjaxRaw(verb, path, data string) EnclosedSnippetCollectionRenderable
 }
 
 func NewMapSourceSetData(sourceId string, data any) {}
+
+// TODO: This can't set other values than string atm
+func NewMapSetLayoutProperty(layerId, propertry, value string) EnclosedSnippetCollectionRenderable {
+	return func(rc RenderConfig) *EnclosedSnippetCollection {
+		s := `map.setLayoutProperty("{{.Data.layerId}}", "{{.Data.property}}", "{{.Data.value}}");`
+		return NewEnclosedSnippetCollection(s, map[string]string{
+			"layerId":  layerId,
+			"property": propertry,
+			"value":    value,
+		})(rc)
+	}
+}
 
 func NewMapSourceSetDataFromLayer(layerId string, data any) EnclosedSnippetCollectionRenderable {
 	return func(rc RenderConfig) *EnclosedSnippetCollection {

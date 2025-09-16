@@ -1,135 +1,95 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"math/rand/v2"
 	"net/http"
 
-	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
-	jsoniter "github.com/json-iterator/go"
 	"github.com/paulmach/orb"
 
 	"github.com/paulmach/orb/geojson"
-	mapboxglgojs "github.com/visendi-labs/mapbox-gl-gojs"
 	mbgojs "github.com/visendi-labs/mapbox-gl-gojs"
 )
 
 func main() {
-	fmt.Println("oks")
-	c := jsoniter.Config{
-		EscapeHTML:              true,
-		SortMapKeys:             false,
-		MarshalFloatWith6Digits: true,
-	}.Froze()
-
-	geojson.CustomJSONMarshaler = c
-	geojson.CustomJSONUnmarshaler = c
-
 	lines := geojson.NewFeatureCollection()
 	points1 := geojson.NewFeatureCollection()
 	points2 := geojson.NewFeatureCollection()
 
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 100; i++ {
 		line := orb.LineString{}
-		for i := 0; i < 20; i++ {
+		for j := 0; j < 10; j++ {
 			line = append(line, orb.Point{-30 + rand.Float64()*60, -30 + rand.Float64()*60})
 		}
 		lines.Append(geojson.NewFeature(line))
 	}
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 1000; i++ {
 		points1.Append(geojson.NewFeature(orb.Point{rand.Float64() * 50, rand.Float64() * 50}))
-		points2.Append(geojson.NewFeature(orb.Point{rand.Float64() * 50, rand.Float64() * 50}))
+		points2.Append(geojson.NewFeature(orb.Point{20 + rand.Float64()*50, 20 - rand.Float64()*50}))
 	}
 
-	// mc := Map{Container: "map"}
-	// s, err := mc.Render()
-	// if err != nil {
-	// 	panic(1)
-	// }
-	// println(s.String())
-
-	esc := mbgojs.NewScript(
+	mapbox := mbgojs.NewScript(
 		mbgojs.NewMap(mbgojs.Map{
 			Container:   "map",
 			AccessToken: "<token>",
 			Hash:        true,
-			Config: mbgojs.MapConfig{
-				Basemap: mbgojs.BasemapConfig{
-					Theme: "faded",
-				},
-			},
+			Config:      mbgojs.MapConfig{Basemap: mbgojs.BasemapConfig{Theme: "faded"}},
 		}),
-		mbgojs.NewConsoleLog("map"),
 		mbgojs.NewMapOnLoad(
-			mbgojs.NewMapAddImageRectangle("square", 10, 10),
-			mbgojs.NewMapAddImageCircle("circle", 15),
+			mbgojs.NewMapAddImageRectangle("square", 20, 20, 4),
+			mbgojs.NewMapAddImageCircle("circle", 10, 2),
 			mbgojs.NewMapAddLayer(mbgojs.MapLayer{
-				Id:   "layer",
-				Type: "line",
-				Source: mbgojs.MapSource{
-					Type: "geojson",
-					Data: *lines,
-				},
+				Id: "layer", Type: "line",
+				Source: mbgojs.MapSource{Type: "geojson", Data: *lines},
 			}),
 			mbgojs.NewMapAddLayer(mbgojs.MapLayer{
-				Id:   "points1",
-				Type: "symbol",
-				Source: mbgojs.MapSource{
-					Type:       "geojson",
-					Data:       *points1,
-					GenerateId: true,
-				},
-				Layout: mbgojs.MapLayout{
-					IconImage:        "square",
-					IconAllowOverlap: true,
-				},
+				Id: "points1", Type: "symbol",
+				Source: mbgojs.MapSource{Type: "geojson", Data: *points1, GenerateId: true},
+				Layout: mbgojs.MapLayout{IconImage: "square", IconAllowOverlap: true},
 			}),
 			mbgojs.NewMapAddLayer(mbgojs.MapLayer{
-				Id:   `points2`,
-				Type: "symbol",
-				Source: mbgojs.MapSource{
-					Type:       "geojson",
-					Data:       *points2,
-					GenerateId: true,
-				},
-				Layout: mbgojs.MapLayout{
-					IconImage:        "circle",
-					IconAllowOverlap: true,
-				},
+				Id: `points2`, Type: "symbol",
+				Source: mbgojs.MapSource{Type: "geojson", Data: *points2, GenerateId: true},
+				Layout: mbgojs.MapLayout{IconImage: "circle", IconAllowOverlap: true},
 			}),
-			mapboxglgojs.NewMapOnEventLayer("click", "points1", mapboxglgojs.NewHtmxAjax(
-				mapboxglgojs.HtmxAjax{
+			mbgojs.NewMapOnEventLayer("click", "points1", mbgojs.NewHtmxAjax(
+				mbgojs.HtmxAjax{
 					Path: "/click",
 					Verb: "GET",
-					Context: mapboxglgojs.HtmxAjaxContext{
+					Context: mbgojs.HtmxAjaxContext{
 						Values: map[string]string{
-							"event":   `"ok"`,
-							"lat":     "e.lngLat.lat",
-							"lng":     "e.lngLat.lng",
-							"feature": "e.features[0].id",
+							"eventType": "e.type",
+							"lat":       "e.lngLat.lat",
+							"lng":       "e.lngLat.lng",
+							"featureId": "e.features[0].id",
+							"layerId":   "e.features[0].layer.id",
+							"layerType": "e.features[0].layer.type",
+							"sourceId":  "e.features[0].source",
+							"type":      "e.features[0].type",
+							"x":         "e.point.x",
+							"y":         "e.point.y",
 						},
 						Target: "#testtarget",
 						Swap:   "innerHTML",
 					},
 				}),
+				mbgojs.NewMapSetLayoutProperty("points2", "visibility", "visible"),
 			),
+			mbgojs.NewMapOnEventLayer("click", "points2", mbgojs.NewMapSetLayoutProperty("points2", "visibility", "none")),
 		),
 		mbgojs.NewMapOnEventLayerCursor("mouseover", "points1", "pointer"),
 		mbgojs.NewMapOnEventLayerCursor("mouseout", "points1", ""),
 		mbgojs.NewMapOnEventLayerCursor("mouseover", "points2", "pointer"),
 		mbgojs.NewMapOnEventLayerCursor("mouseout", "points2", ""),
-		mbgojs.NewMapOnEventLayer("mouseout", "layer"),
 	)
 
-	s, err := esc.Render(mbgojs.RenderConfig{})
+	s, err := mapbox.Render(mbgojs.RenderConfig{})
 	if err != nil {
 		panic(err)
 	}
 
 	r := gin.Default()
-	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -157,28 +117,21 @@ func main() {
 		}
 	})
 	r.GET("/", func(ctx *gin.Context) {
-		t, _ := template.New("page").Parse(`
-		<html>
-		<head>
+		t, _ := template.New("page").Parse(`<html><head>
 			<script src='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js'></script>
 			<link href='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css' rel='stylesheet' />
 			<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
-
-		</head>
-		<body>
+		</head><body style="margin:0">
 			<div id="testtarget"></div>
-			<div id="map" style="width:100vw; height:100vh"></div>
-			{{.}}
-		</body>
-		</html>
-		`)
+			<div id="map" style="width:100vw; height:100vh;"></div>
+			{{.}}</body></html>`)
 
 		if err := t.Execute(ctx.Writer, template.HTML(s)); err != nil {
 			ctx.Status(http.StatusInternalServerError)
 			return
 		}
 	})
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run()
 }
 
 // curl --output data -H  "Accept-Encoding: gzip" localhost:8080
