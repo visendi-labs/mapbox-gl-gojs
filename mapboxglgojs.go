@@ -21,17 +21,18 @@ const (
 
 type RenderConfig struct {
 	UseCustomJsonMarshal bool
+	KeepWhitespace       bool
 }
 
 type EnclosedSnippetCollectionRenderable func(RenderConfig) *EnclosedSnippetCollection
 
 type EnclosedSnippetCollection struct {
 	Template string
-	Data     map[string]string
+	Data     any
 	Children []EnclosedSnippetCollectionRenderable
 }
 
-func NewEnclosedSnippetCollection(template string, data map[string]string, c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
+func NewEnclosedSnippetCollection(template string, data any, c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
 	a := EnclosedSnippetCollection{
 		Template: template,
 		Data:     data,
@@ -42,7 +43,7 @@ func NewEnclosedSnippetCollection(template string, data map[string]string, c ...
 	})
 }
 
-func NewMapScript(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
+func NewScript(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
 	// Add script tag type as input? Like async, module or things like that
 	return NewEnclosedSnippetCollection(`<script>{{.Children }}</script>`, map[string]string{}, c...)
 }
@@ -59,7 +60,7 @@ func NewMap(mc Map) EnclosedSnippetCollectionRenderable {
 }
 
 func NewMapOnEventLayer(event, layer string, c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
-	return NewEnclosedSnippetCollection(`map.on("{{.Data.event}}", "{{.Data.layer}}", () => { {{- .Children -}} });`, map[string]string{
+	return NewEnclosedSnippetCollection(`map.on("{{.Data.event}}", "{{.Data.layer}}", (e) => { {{- .Children -}} });`, map[string]string{
 		"event": event,
 		"layer": layer,
 	}, c...)
@@ -126,7 +127,7 @@ func NewMapAddImage(name, imgBase64 string, width, height int) EnclosedSnippetCo
 }
 
 func NewMapOnEvent(event string, c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
-	return NewEnclosedSnippetCollection(`map.on("{{.Data.data}}", () => { {{- .Children -}} });`, map[string]string{"data": event}, c...)
+	return NewEnclosedSnippetCollection(`map.on("{{.Data.data}}", (e) => { {{- .Children -}} });`, map[string]string{"data": event}, c...)
 }
 
 func NewMapOnLoad(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
@@ -169,7 +170,7 @@ func (esc EnclosedSnippetCollectionRenderable) Render(config RenderConfig) (html
 	}
 	if err := t.Execute(&b, struct {
 		Children string
-		Data     map[string]string
+		Data     any // map[string]string
 	}{
 		Children: children.String(),
 		Data:     c.Data,
@@ -188,8 +189,9 @@ type MapLayer struct {
 }
 
 type MapSource struct {
-	Type string `json:"type,omitempty"`
-	Data any    `json:"data,omitempty"`
+	Type       string `json:"type,omitempty"`
+	Data       any    `json:"data,omitempty"`
+	GenerateId bool   `json:"generateId,omitempty"`
 }
 
 func NewMapAddSourceFeatureCollection(fc geojson.FeatureCollection) EnclosedSnippetCollectionRenderable {
@@ -205,6 +207,128 @@ func NewMapAddSource(ms any) EnclosedSnippetCollectionRenderable {
 		"map.addSource({{.Data.data}});",
 		map[string]string{"data": string(j)},
 	)
+}
+
+func NewMapRemoveLayer(layerId string) EnclosedSnippetCollectionRenderable {
+	return func(rc RenderConfig) *EnclosedSnippetCollection {
+		return NewEnclosedSnippetCollection(
+			`map.removeLayer("{{.Data.data}}");`,
+			map[string]string{"data": layerId},
+		)(rc)
+	}
+}
+
+type HtmxAjax struct {
+	Path    string
+	Verb    string
+	Context HtmxAjaxContext
+}
+
+type HtmxAjaxContext struct {
+	Headers map[string]string
+	Values  map[string]string
+	Swap    string
+	Target  string
+	Event   string
+	Handler string
+	Select  string
+	Source  string
+}
+
+// NOTE: This one needs to be inside an event, so that it has access to the event variable e
+func NewMapOnEventLayerHtmxAjaxEventData(event, layer, verb, path string) EnclosedSnippetCollectionRenderable {
+	return NewMapOnEventLayer(event, layer, NewHtmxAjax(HtmxAjax{
+		Path: path,
+		Verb: verb,
+		Context: HtmxAjaxContext{
+			Values: map[string]string{
+				"eventData": "ok",
+			},
+		},
+	}))
+}
+
+// TODO: Be able to pass data down into children? Messy?
+func NewMapOnEventLayerHtmxAjax(event, layer string, data HtmxAjax) EnclosedSnippetCollectionRenderable {
+	return NewMapOnEventLayer(event, layer, NewHtmxAjax(data))
+}
+
+func NewMapOnEventHtmxAjax(event string, data HtmxAjax) EnclosedSnippetCollectionRenderable {
+	return NewMapOnEvent(event, NewHtmxAjax(data))
+}
+
+func NewHtmxAjax(htmxAjax HtmxAjax) EnclosedSnippetCollectionRenderable {
+	return func(rc RenderConfig) *EnclosedSnippetCollection {
+		// j, err := json.Marshal(data) // TODO: How to marshal JS code (not JSON)?
+		// if err != nil {
+		// 	panic(err)
+		// }
+		s := `htmx.ajax(
+			"{{.Data.Verb}}",
+			"{{.Data.Path}}",
+			{
+				"values": {
+					{{range $k, $v := .Data.Context.Values}}
+						"{{$k}}": {{$v}},
+					{{end}}
+				},
+				{{if .Data.Context.Swap}}"swap": "{{.Data.Context.Swap}}",{{end}}
+				{{if .Data.Context.Target}}"target": "{{.Data.Context.Target}}",{{end}}
+			}
+		);`
+		if !rc.KeepWhitespace {
+			s = strings.ReplaceAll(s, "\t", "")
+			s = strings.ReplaceAll(s, "\n", " ")
+		}
+		return NewEnclosedSnippetCollection(s, htmxAjax)(rc)
+	}
+} // TODO: Template a HTMX hx-vals
+
+func NewHtmxAjaxRaw(verb, path, data string) EnclosedSnippetCollectionRenderable {
+	return func(rc RenderConfig) *EnclosedSnippetCollection {
+		return NewEnclosedSnippetCollection(
+			`htmx.ajax("{{.Data.verb}}", "{{.Data.path}}")`, map[string]string{},
+		)(rc)
+	}
+}
+
+func NewMapSourceSetData(sourceId string, data any) {}
+
+func NewMapSourceSetDataFromLayer(layerId string, data any) EnclosedSnippetCollectionRenderable {
+	return func(rc RenderConfig) *EnclosedSnippetCollection {
+		j, err := json.Marshal(data) // Indent(ml, "", "\t")
+		if err != nil {
+			panic(err)
+		}
+		s := `
+			(
+				() => {
+				 	let l = map.getLayer("{{.Data.layer}}");
+					if(l) {
+						let s = map.getSource(l.source);
+						if(s) {
+							s.setData({{.Data.data}});
+						} else {
+							console.warn("could not find source \"", l.source, "\" in layer \"{{.Data.layer}}\""); 
+						}
+					} else {
+						console.warn("could not find layer \"{{.Data.layer}}\""); 
+					}
+				}
+			)();`
+		if !rc.KeepWhitespace {
+			s = strings.ReplaceAll(s, "\t", "")
+			s = strings.ReplaceAll(s, "\n", " ")
+		}
+		// TODO: Add in RenderConfig option to ignore console log warnings? I.e. if/else in template that skips on a bool input
+		return NewEnclosedSnippetCollection( // TODO: Use embed here to read from real JS files?
+			s,
+			map[string]string{
+				"layer": layerId,
+				"data":  string(j),
+			},
+		)(rc)
+	}
 }
 
 func NewMapAddLayer(ml MapLayer) EnclosedSnippetCollectionRenderable {
