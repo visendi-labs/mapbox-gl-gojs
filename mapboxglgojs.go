@@ -49,6 +49,11 @@ func NewScript(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollecti
 	return NewEnclosedSnippetCollection(`<script>{{.Children }}</script>`, map[string]string{}, c...)
 }
 
+func NewGroup(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
+	// Add script tag type as input? Like async, module or things like that
+	return NewEnclosedSnippetCollection(`{{.Children }}`, map[string]string{}, c...)
+}
+
 func NewMap(mc Map) EnclosedSnippetCollectionRenderable {
 	j, err := json.Marshal(mc)
 	if err != nil {
@@ -60,6 +65,7 @@ func NewMap(mc Map) EnclosedSnippetCollectionRenderable {
 	)
 }
 
+// map.on("event", layer, (e) => { ... });
 func NewMapOnEventLayer(event, layer string, c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
 	return NewEnclosedSnippetCollection(`map.on("{{.Data.event}}", "{{.Data.layer}}", (e) => { {{- .Children -}} });`, map[string]string{
 		"event": event,
@@ -182,12 +188,18 @@ func (esc EnclosedSnippetCollectionRenderable) Render(config RenderConfig) (html
 	return htmltemplate.JS(b.String()), nil
 }
 
+// TODO: make this stricter? How to separate the different options for the values?
+type MapLayerPaint struct {
+	LineColor any `json:"line-color,omitempty"`
+	LineWidth any `json:"line-width,omitempty"`
+}
+
 type MapLayer struct {
-	Id     string    `json:"id,omitempty"`
-	Type   string    `json:"type,omitempty"`
-	Source any       `json:"source,omitempty"`
-	Layout MapLayout `json:"layout,omitempty"`
-	Paint  string    `json:"paint,omitempty"`
+	Id     string        `json:"id,omitempty"`
+	Type   string        `json:"type,omitempty"`
+	Source any           `json:"source,omitempty"`
+	Layout MapLayout     `json:"layout,omitempty"`
+	Paint  MapLayerPaint `json:"paint,omitempty"`
 }
 
 type MapSource struct {
@@ -196,18 +208,26 @@ type MapSource struct {
 	GenerateId bool   `json:"generateId,omitempty"`
 }
 
-func NewMapAddSourceFeatureCollection(fc geojson.FeatureCollection) EnclosedSnippetCollectionRenderable {
-	return NewMapAddSource(fc)
+func NewMapAddSourceFeatureCollection(id string, fc geojson.FeatureCollection) EnclosedSnippetCollectionRenderable {
+	return NewMapAddSource(id, MapSource{
+		Type:       "geojson",
+		Data:       fc,
+		GenerateId: true,
+	})
 }
 
-func NewMapAddSource(ms any) EnclosedSnippetCollectionRenderable {
+// TODO: Make this stricter/break out into more than one? Different types/formats of sources
+func NewMapAddSource(id string, ms MapSource) EnclosedSnippetCollectionRenderable {
 	j, err := json.Marshal(ms) // Indent(ms, "", "\t")
 	if err != nil {
 		panic(err)
 	}
 	return NewEnclosedSnippetCollection(
-		"map.addSource({{.Data.data}});",
-		map[string]string{"data": string(j)},
+		`map.addSource("{{.Data.id}}", {{.Data.data}});`,
+		map[string]string{
+			"id":   id,
+			"data": string(j),
+		},
 	)
 }
 
@@ -226,6 +246,27 @@ type HtmxAjax struct {
 	Context HtmxAjaxContext
 }
 
+var HtmxAjaxContextEventValuesFull map[string]string = map[string]string{
+	"eventType": "e.type",
+	"lat":       "e.lngLat.lat",
+	"lng":       "e.lngLat.lng",
+	"featureId": "e.features[0].id",
+	"layerId":   "e.features[0].layer.id",
+	"layerType": "e.features[0].layer.type",
+	"sourceId":  "e.features[0].source",
+	"type":      "e.features[0].type",
+	"x":         "e.point.x",
+	"y":         "e.point.y",
+}
+
+var HtmxAjaxContextEventValuesNoFeature map[string]string = map[string]string{
+	"eventType": "e.type",
+	"lat":       "e.lngLat.lat",
+	"lng":       "e.lngLat.lng",
+	"x":         "e.point.x",
+	"y":         "e.point.y",
+}
+
 type HtmxAjaxContext struct {
 	Headers map[string]string
 	Values  map[string]string
@@ -237,16 +278,11 @@ type HtmxAjaxContext struct {
 	Source  string
 }
 
+// TODO: Remove this!?!? Just better off using the NewMapOnEventLayer instead
 // NOTE: This one needs to be inside an event, so that it has access to the event variable e
-func NewMapOnEventLayerHtmxAjaxEventData(event, layer, verb, path string) EnclosedSnippetCollectionRenderable {
+func NewMapOnEventLayerHtmxAjaxEventData(event, layer, verb, path string, h HtmxAjaxContext) EnclosedSnippetCollectionRenderable {
 	return NewMapOnEventLayer(event, layer, NewHtmxAjax(HtmxAjax{
-		Path: path,
-		Verb: verb,
-		Context: HtmxAjaxContext{
-			Values: map[string]string{
-				"eventData": "ok",
-			},
-		},
+		Path: path, Verb: verb, Context: h,
 	}))
 }
 
@@ -304,6 +340,27 @@ func NewMapSetLayoutProperty(layerId, propertry, value string) EnclosedSnippetCo
 			"layerId":  layerId,
 			"property": propertry,
 			"value":    value,
+		})(rc)
+	}
+}
+
+// TODO: We really need to make it clear which values are not wrapped in quotes? General structs with different fields?
+func NewMapSetFeatureState(source, sourceLayer, id string, features map[string]string) EnclosedSnippetCollectionRenderable {
+	return func(rc RenderConfig) *EnclosedSnippetCollection {
+		s := `map.setFeatureState({
+			source: "{{.Data.source}}",
+			{{- if .Data.sourceLayer }} sourceLayer: "{{.Data.sourceLayer}}",{{end -}}
+			id: {{.Data.id}} 
+		}, {
+			{{range $k, $v := .Data.features}}
+				"{{$k}}": {{$v}},
+			{{end}}
+		});`
+		return NewEnclosedSnippetCollection(s, map[string]any{
+			"source":      source,
+			"sourceLayer": sourceLayer,
+			"id":          id,
+			"features":    features,
 		})(rc)
 	}
 }

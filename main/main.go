@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"math/rand/v2"
 	"net/http"
@@ -17,14 +18,14 @@ func main() {
 	points1 := geojson.NewFeatureCollection()
 	points2 := geojson.NewFeatureCollection()
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 1; i++ {
 		line := orb.LineString{}
-		for j := 0; j < 10; j++ {
+		for j := 0; j < 2; j++ {
 			line = append(line, orb.Point{-30 + rand.Float64()*60, -30 + rand.Float64()*60})
 		}
 		lines.Append(geojson.NewFeature(line))
 	}
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 10; i++ {
 		points1.Append(geojson.NewFeature(orb.Point{rand.Float64() * 50, rand.Float64() * 50}))
 		points2.Append(geojson.NewFeature(orb.Point{20 + rand.Float64()*50, 20 - rand.Float64()*50}))
 	}
@@ -39,10 +40,44 @@ func main() {
 		mbgojs.NewMapOnLoad(
 			mbgojs.NewMapAddImageRectangle("square", 20, 20, 4),
 			mbgojs.NewMapAddImageCircle("circle", 10, 2),
+			mbgojs.NewMapAddSource(
+				"sourceId", mbgojs.MapSource{Type: "geojson", Data: lines, GenerateId: true},
+			),
 			mbgojs.NewMapAddLayer(mbgojs.MapLayer{
-				Id: "layer", Type: "line",
-				Source: mbgojs.MapSource{Type: "geojson", Data: *lines},
+				Id: "layer", Type: "line", Source: "sourceId",
+				Paint: mbgojs.MapLayerPaint{
+					LineColor: "#116",
+					LineWidth: []any{
+						"case",
+						[]any{"boolean", []any{"feature-state", "hover"}, false},
+						6, 2,
+					},
+				},
 			}),
+			(func(sources ...string) mbgojs.EnclosedSnippetCollectionRenderable {
+				r := []mbgojs.EnclosedSnippetCollectionRenderable{}
+				for _, s := range sources {
+					r = append(r,
+						mbgojs.NewMapOnEventLayer("mouseover", "layer", mbgojs.NewHtmxAjax(
+							mbgojs.HtmxAjax{
+								Path: "/hover?hover=true",
+								Verb: "GET",
+								Context: mbgojs.HtmxAjaxContext{
+									Values: mbgojs.HtmxAjaxContextEventValuesFull, Target: "#testtarget", Swap: "innerHTML",
+								},
+							}),
+						),
+						mbgojs.NewMapOnEventLayer("mouseout", "layer", mbgojs.NewHtmxAjax(
+							mbgojs.HtmxAjax{
+								Path:    fmt.Sprintf("/hover?hover=false&sourceId=%s", s),
+								Verb:    "GET",
+								Context: mbgojs.HtmxAjaxContext{Target: "#testtarget", Swap: "innerHTML"},
+							},
+						)),
+					)
+				}
+				return mbgojs.NewGroup(r...)
+			})("sourceId"),
 			mbgojs.NewMapAddLayer(mbgojs.MapLayer{
 				Id: "points1", Type: "symbol",
 				Source: mbgojs.MapSource{Type: "geojson", Data: *points1, GenerateId: true},
@@ -58,18 +93,7 @@ func main() {
 					Path: "/click",
 					Verb: "GET",
 					Context: mbgojs.HtmxAjaxContext{
-						Values: map[string]string{
-							"eventType": "e.type",
-							"lat":       "e.lngLat.lat",
-							"lng":       "e.lngLat.lng",
-							"featureId": "e.features[0].id",
-							"layerId":   "e.features[0].layer.id",
-							"layerType": "e.features[0].layer.type",
-							"sourceId":  "e.features[0].source",
-							"type":      "e.features[0].type",
-							"x":         "e.point.x",
-							"y":         "e.point.y",
-						},
+						Values: mbgojs.HtmxAjaxContextEventValuesFull,
 						Target: "#testtarget",
 						Swap:   "innerHTML",
 					},
@@ -95,6 +119,23 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
+	})
+	hoveredId := ""
+	r.GET("/hover", func(c *gin.Context) {
+		if f := c.Query("featureId"); f != "" {
+			hoveredId = f
+		}
+		sourceId := c.Query("sourceId")
+		hover := c.Query("hover")
+		t, err := template.New("").Parse(string(mbgojs.NewScript(
+			mbgojs.NewMapSetFeatureState(sourceId, "", hoveredId, map[string]string{
+				"hover": hover,
+			}),
+		).MustRender(mbgojs.RenderConfig{})))
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+		}
+		t.Execute(c.Writer, nil)
 	})
 	r.GET("/click", func(ctx *gin.Context) {
 		feature := ctx.Query("feature")
