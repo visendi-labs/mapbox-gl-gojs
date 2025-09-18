@@ -19,12 +19,12 @@ func main() {
 	points1 := geojson.NewFeatureCollection()
 	points2 := geojson.NewFeatureCollection()
 
-	for i := 0; i < 2; i++ {
+	for i := 0; i < 100; i++ {
 		line1 := orb.LineString{}
 		line2 := orb.LineString{}
-		for j := 0; j < 3; j++ {
+		for j := 0; j < 5; j++ {
 			line1 = append(line1, orb.Point{-30 + rand.Float64()*60, -30 + rand.Float64()*60})
-			line2 = append(line2, orb.Point{-30 + rand.Float64()*60, -30 + rand.Float64()*60})
+			line2 = append(line2, orb.Point{rand.Float64() * 60, rand.Float64() * 60})
 		}
 		lines1.Append(geojson.NewFeature(line1))
 		lines2.Append(geojson.NewFeature(line2))
@@ -57,7 +57,7 @@ func main() {
 					LineWidth: []any{
 						"case",
 						[]any{"boolean", []any{"feature-state", "hover"}, false},
-						6, 2,
+						8, 2,
 					},
 				},
 			}),
@@ -68,11 +68,11 @@ func main() {
 					LineWidth: []any{
 						"case",
 						[]any{"boolean", []any{"feature-state", "hover"}, false},
-						6, 2,
+						8, 2,
 					},
 				},
 			}),
-			mbgojs.NewMapOnEventLayerPairFeatureState("mouseover", "mouseout", "layer2", "sourceId2"),
+			mbgojs.NewMapOnEventLayerPairFeatureState("mouseover", "mouseout", "layer2", "sourceId2", "hover", "true", "false"),
 			(func(sources ...string) mbgojs.EnclosedSnippetCollectionRenderable {
 				r := []mbgojs.EnclosedSnippetCollectionRenderable{}
 				for _, s := range sources {

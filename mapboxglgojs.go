@@ -68,7 +68,7 @@ func NewMap(mc Map) EnclosedSnippetCollectionRenderable {
 
 // TODO: This is probably way more sane than to have a HTMX endpoint do the same thing? Or?
 // TODO: Could this be more modular? Or is it good to have a super specific function like this?
-func NewMapOnEventLayerPairFeatureState(event1, event2, layer, source string) EnclosedSnippetCollectionRenderable {
+func NewMapOnEventLayerPairFeatureState(event1, event2, layer, source, feature, event1Value, event2Value string) EnclosedSnippetCollectionRenderable {
 	variable := "x" + strings.ReplaceAll(base64.StdEncoding.EncodeToString([]byte(strconv.Itoa(rand.Int()))), "=", "")
 	return func(rc RenderConfig) *EnclosedSnippetCollection {
 		return NewEnclosedSnippetCollection(
@@ -76,7 +76,7 @@ func NewMapOnEventLayerPairFeatureState(event1, event2, layer, source string) En
 			map[string]string{"event1": event1, "event2": event2, "layer": layer, "variable": variable},
 			NewMapOnEventLayer(event1, layer,
 				NewMapSetFeatureState(source, "", "e.features[0].id", map[string]string{
-					"hover": "true",
+					feature: event1Value,
 				}),
 				NewEnclosedSnippetCollection("{{.Data.variable}} = e.features[0].id;", map[string]string{
 					"variable": variable,
@@ -84,7 +84,7 @@ func NewMapOnEventLayerPairFeatureState(event1, event2, layer, source string) En
 			),
 			NewMapOnEventLayer(event2, layer,
 				NewMapSetFeatureState(source, "", variable, map[string]string{
-					"hover": "false",
+					feature: event2Value,
 				}),
 				NewEnclosedSnippetCollection("{{.Data.variable}} = null;", map[string]string{
 					"variable": variable,
