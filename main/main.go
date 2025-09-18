@@ -14,16 +14,20 @@ import (
 )
 
 func main() {
-	lines := geojson.NewFeatureCollection()
+	lines1 := geojson.NewFeatureCollection()
+	lines2 := geojson.NewFeatureCollection()
 	points1 := geojson.NewFeatureCollection()
 	points2 := geojson.NewFeatureCollection()
 
-	for i := 0; i < 1; i++ {
-		line := orb.LineString{}
-		for j := 0; j < 2; j++ {
-			line = append(line, orb.Point{-30 + rand.Float64()*60, -30 + rand.Float64()*60})
+	for i := 0; i < 2; i++ {
+		line1 := orb.LineString{}
+		line2 := orb.LineString{}
+		for j := 0; j < 3; j++ {
+			line1 = append(line1, orb.Point{-30 + rand.Float64()*60, -30 + rand.Float64()*60})
+			line2 = append(line2, orb.Point{-30 + rand.Float64()*60, -30 + rand.Float64()*60})
 		}
-		lines.Append(geojson.NewFeature(line))
+		lines1.Append(geojson.NewFeature(line1))
+		lines2.Append(geojson.NewFeature(line2))
 	}
 	for i := 0; i < 10; i++ {
 		points1.Append(geojson.NewFeature(orb.Point{rand.Float64() * 50, rand.Float64() * 50}))
@@ -41,10 +45,13 @@ func main() {
 			mbgojs.NewMapAddImageRectangle("square", 20, 20, 4),
 			mbgojs.NewMapAddImageCircle("circle", 10, 2),
 			mbgojs.NewMapAddSource(
-				"sourceId", mbgojs.MapSource{Type: "geojson", Data: lines, GenerateId: true},
+				"sourceId1", mbgojs.MapSource{Type: "geojson", Data: lines1, GenerateId: true},
+			),
+			mbgojs.NewMapAddSource(
+				"sourceId2", mbgojs.MapSource{Type: "geojson", Data: lines2, GenerateId: true},
 			),
 			mbgojs.NewMapAddLayer(mbgojs.MapLayer{
-				Id: "layer", Type: "line", Source: "sourceId",
+				Id: "layer1", Type: "line", Source: "sourceId1",
 				Paint: mbgojs.MapLayerPaint{
 					LineColor: "#116",
 					LineWidth: []any{
@@ -54,11 +61,23 @@ func main() {
 					},
 				},
 			}),
+			mbgojs.NewMapAddLayer(mbgojs.MapLayer{
+				Id: "layer2", Type: "line", Source: "sourceId2",
+				Paint: mbgojs.MapLayerPaint{
+					LineColor: "#611",
+					LineWidth: []any{
+						"case",
+						[]any{"boolean", []any{"feature-state", "hover"}, false},
+						6, 2,
+					},
+				},
+			}),
+			mbgojs.NewMapOnEventLayerPairFeatureState("mouseover", "mouseout", "layer2", "sourceId2"),
 			(func(sources ...string) mbgojs.EnclosedSnippetCollectionRenderable {
 				r := []mbgojs.EnclosedSnippetCollectionRenderable{}
 				for _, s := range sources {
 					r = append(r,
-						mbgojs.NewMapOnEventLayer("mouseover", "layer", mbgojs.NewHtmxAjax(
+						mbgojs.NewMapOnEventLayer("mouseover", "layer1", mbgojs.NewHtmxAjax(
 							mbgojs.HtmxAjax{
 								Path: "/hover?hover=true",
 								Verb: "GET",
@@ -67,7 +86,7 @@ func main() {
 								},
 							}),
 						),
-						mbgojs.NewMapOnEventLayer("mouseout", "layer", mbgojs.NewHtmxAjax(
+						mbgojs.NewMapOnEventLayer("mouseout", "layer1", mbgojs.NewHtmxAjax(
 							mbgojs.HtmxAjax{
 								Path:    fmt.Sprintf("/hover?hover=false&sourceId=%s", s),
 								Verb:    "GET",
@@ -77,7 +96,7 @@ func main() {
 					)
 				}
 				return mbgojs.NewGroup(r...)
-			})("sourceId"),
+			})("sourceId1"),
 			mbgojs.NewMapAddLayer(mbgojs.MapLayer{
 				Id: "points1", Type: "symbol",
 				Source: mbgojs.MapSource{Type: "geojson", Data: *points1, GenerateId: true},

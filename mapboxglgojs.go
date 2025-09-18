@@ -6,6 +6,7 @@ import (
 	"fmt"
 	htmltemplate "html/template"
 	"math"
+	"math/rand/v2"
 	"strconv"
 	"strings"
 	"text/template"
@@ -63,6 +64,34 @@ func NewMap(mc Map) EnclosedSnippetCollectionRenderable {
 		`const map = new mapboxgl.Map({{ .Data.data }});`,
 		map[string]string{"data": string(j)},
 	)
+}
+
+// TODO: This is probably way more sane than to have a HTMX endpoint do the same thing? Or?
+// TODO: Could this be more modular? Or is it good to have a super specific function like this?
+func NewMapOnEventLayerPairFeatureState(event1, event2, layer, source string) EnclosedSnippetCollectionRenderable {
+	variable := "x" + strings.ReplaceAll(base64.StdEncoding.EncodeToString([]byte(strconv.Itoa(rand.Int()))), "=", "")
+	return func(rc RenderConfig) *EnclosedSnippetCollection {
+		return NewEnclosedSnippetCollection(
+			`let {{.Data.variable}} = null; {{.Children}}`,
+			map[string]string{"event1": event1, "event2": event2, "layer": layer, "variable": variable},
+			NewMapOnEventLayer(event1, layer,
+				NewMapSetFeatureState(source, "", "e.features[0].id", map[string]string{
+					"hover": "true",
+				}),
+				NewEnclosedSnippetCollection("{{.Data.variable}} = e.features[0].id;", map[string]string{
+					"variable": variable,
+				}),
+			),
+			NewMapOnEventLayer(event2, layer,
+				NewMapSetFeatureState(source, "", variable, map[string]string{
+					"hover": "false",
+				}),
+				NewEnclosedSnippetCollection("{{.Data.variable}} = null;", map[string]string{
+					"variable": variable,
+				}),
+			),
+		)(rc)
+	}
 }
 
 // map.on("event", layer, (e) => { ... });
@@ -332,6 +361,7 @@ func NewHtmxAjaxRaw(verb, path, data string) EnclosedSnippetCollectionRenderable
 
 func NewMapSourceSetData(sourceId string, data any) {}
 
+// TODO: For hover things - generate a UUID variable name to use for keeping track of "hovered line" id?
 // TODO: This can't set other values than string atm
 func NewMapSetLayoutProperty(layerId, propertry, value string) EnclosedSnippetCollectionRenderable {
 	return func(rc RenderConfig) *EnclosedSnippetCollection {
