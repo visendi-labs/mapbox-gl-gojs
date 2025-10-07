@@ -68,6 +68,7 @@ func NewMap(mc Map) EnclosedSnippetCollectionRenderable {
 
 // TODO: This is probably way more sane than to have a HTMX endpoint do the same thing? Or?
 // TODO: Could this be more modular? Or is it good to have a super specific function like this?
+// TODO: Make the input here a struct instead?
 func NewMapOnEventLayerPairFeatureState(event1, event2, layer, source, feature, event1Value, event2Value string) EnclosedSnippetCollectionRenderable {
 	variable := "x" + strings.ReplaceAll(base64.StdEncoding.EncodeToString([]byte(strconv.Itoa(rand.Int()))), "=", "")
 	return func(rc RenderConfig) *EnclosedSnippetCollection {
@@ -260,6 +261,17 @@ func NewMapAddSource(id string, ms MapSource) EnclosedSnippetCollectionRenderabl
 	)
 }
 
+func NewMapSourceSetData(id string, d any) EnclosedSnippetCollectionRenderable {
+	data, err := json.Marshal(d)
+	if err != nil {
+		panic(err)
+	}
+	return NewEnclosedSnippetCollection(
+		`map.getSource("{{.Data.id}}").setData({{.Data.data}});`,
+		map[string]string{"id": id, "data": string(data)},
+	)
+}
+
 func NewMapRemoveLayer(layerId string) EnclosedSnippetCollectionRenderable {
 	return func(rc RenderConfig) *EnclosedSnippetCollection {
 		return NewEnclosedSnippetCollection(
@@ -359,8 +371,6 @@ func NewHtmxAjaxRaw(verb, path, data string) EnclosedSnippetCollectionRenderable
 	}
 }
 
-func NewMapSourceSetData(sourceId string, data any) {}
-
 // TODO: For hover things - generate a UUID variable name to use for keeping track of "hovered line" id?
 // TODO: This can't set other values than string atm
 func NewMapSetLayoutProperty(layerId, propertry, value string) EnclosedSnippetCollectionRenderable {
@@ -395,6 +405,7 @@ func NewMapSetFeatureState(source, sourceLayer, id string, features map[string]s
 	}
 }
 
+// Sould this just use a setData from source id?
 func NewMapSourceSetDataFromLayer(layerId string, data any) EnclosedSnippetCollectionRenderable {
 	return func(rc RenderConfig) *EnclosedSnippetCollection {
 		j, err := json.Marshal(data) // Indent(ml, "", "\t")

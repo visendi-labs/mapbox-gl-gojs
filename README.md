@@ -60,5 +60,11 @@ func main() {
 }
 ```
 
-
 ![asd](image.png)
+
+
+### TODO
+- Fix Mapbox Popup logic
+- Improve type safety
+- Fix render config
+- Acutal template files/file? Multiple defines in one file? #embed
