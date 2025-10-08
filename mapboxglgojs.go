@@ -112,6 +112,21 @@ func NewMapOnEventLayerCursor(event, layer, cursor string) EnclosedSnippetCollec
 	}))
 }
 
+func NewPopup(lngLat geojson.Point, html string) EnclosedSnippetCollectionRenderable {
+	coord, err := json.Marshal([2]float64{lngLat[0], lngLat[1]})
+	if err != nil {
+		panic(err)
+	}
+	return NewEnclosedSnippetCollection(
+		`(new mapboxgl.Popup({ closeOnClick: false })).setLngLat({{.Data.coord}}).setHTML("{{.Data.html}}").addTo(map);`,
+		map[string]string{
+			"coord": string(coord),
+			"html":  html,
+		},
+	)
+
+}
+
 func NewConsoleWarn(log string) EnclosedSnippetCollectionRenderable {
 	return NewEnclosedSnippetCollection("console.warn({{.Data.data}});", map[string]string{"data": log})
 }
