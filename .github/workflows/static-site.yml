@@ -1,0 +1,52 @@
+name: Static Hosting Pipeline
+
+# Trigger on pushes to main (and optionally on pull‑request merges)
+on:
+  push:
+    # Trigger on pushes to any branch
+    branches: ['*']
+  pull_request:
+    # Trigger on pull requests from any branch
+    branches: ['*']
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout the repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Cache Go modules (optional but speeds up builds)
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      # 3️⃣ Set up Go from go.mod
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      # 4️⃣ Build the Go application (WebAssembly)
+      - name: Build Go application
+        env:
+          MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}   # <-- correct key
+        run: |
+          cd docs
+          chmod +x wasm_compile_all.sh
+          ./wasm_compile_all
+
+      # 5️⃣ Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}   # <-- required for write access
+          publish_dir: ./docs
