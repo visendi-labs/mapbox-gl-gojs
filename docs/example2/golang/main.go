@@ -8,7 +8,7 @@ import (
 	"github.com/visendi-labs/mapbox-gl-gojs/docs/example2/common"
 )
 
-// / [demo]
+// / ### [demo]
 func main() {
 	router := gin.Default()
 

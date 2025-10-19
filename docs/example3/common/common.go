@@ -2,16 +2,13 @@ package common
 
 import (
 	"math/rand/v2"
-	"os"
 
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 	mapboxglgojs "github.com/visendi-labs/mapbox-gl-gojs"
 )
 
-var token = os.Getenv("MAPBOX_ACCESS_KEY")
-
-func Example() string {
+func Example(token string) string {
 	/// [demo]
 	lines := geojson.NewFeatureCollection()
 	for i := 0; i < 20; i++ {

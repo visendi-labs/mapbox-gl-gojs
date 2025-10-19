@@ -1,8 +1,6 @@
 package main
 
-import (
-	"example1/common"
-)
+import "example/common"
 
 func main() {
 	common.Add(1, 2)
