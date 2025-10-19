@@ -112,6 +112,7 @@ func NewMapOnEventLayerCursor(event, layer, cursor string) EnclosedSnippetCollec
 	}))
 }
 
+// TODO add all options in Popup constructor
 func NewPopup(lngLat geojson.Point, html string) EnclosedSnippetCollectionRenderable {
 	coord, err := json.Marshal([2]float64{lngLat[0], lngLat[1]})
 	if err != nil {
@@ -235,8 +236,32 @@ func (esc EnclosedSnippetCollectionRenderable) Render(config RenderConfig) (html
 
 // TODO: make this stricter? How to separate the different options for the values?
 type MapLayerPaint struct {
-	LineColor any `json:"line-color,omitempty"`
-	LineWidth any `json:"line-width,omitempty"`
+	// Line paint properties
+	LineColor   any `json:"line-color,omitempty"`
+	LineWidth   any `json:"line-width,omitempty"`
+	LineOpacity any `json:"line-opacity,omitempty"`
+	LineCap     any `json:"line-cap,omitempty"`
+
+	// Fill paint properties
+	FillColor   any `json:"fill-color,omitempty"`
+	FillOpacity any `json:"fill-opacity,omitempty"`
+
+	// Circle paint properties
+	CircleRadius      any `json:"circle-radius,omitempty"`
+	CircleColor       any `json:"circle-color,omitempty"`
+	CircleOpacity     any `json:"circle-opacity,omitempty"`
+	CircleStrokeWidth any `json:"circle-stroke-width,omitempty"`
+	CircleStrokeColor any `json:"circle-stroke-color,omitempty"`
+
+	// Symbol paint properties
+	SymbolIconSize    any `json:"symbol-icon-size,omitempty"`
+	SymbolTextColor   any `json:"text-color,omitempty"`
+	SymbolTextOpacity any `json:"text-opacity,omitempty"`
+
+	// Heatmap paint properties
+	HeatmapIntensity any `json:"heatmap-intensity,omitempty"`
+	HeatmapWeight    any `json:"heatmap-weight,omitempty"`
+	HeatmapRadius    any `json:"heatmap-radius,omitempty"`
 }
 
 type MapLayer struct {
