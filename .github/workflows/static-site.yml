@@ -13,6 +13,7 @@ on:
 permissions:
   contents: read        # keep read for source operations
   pages: write          # required to deploy to GitHub Pages
+  id-token: write       # needed if OIDC is used by any action
 
 jobs:
   build-and-deploy:
