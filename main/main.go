@@ -3,11 +3,16 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"math"
 	"math/rand/v2"
 	"net/http"
+	"os"
+	"strconv"
 
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/geo"
 
 	"github.com/paulmach/orb/geojson"
 	mbgojs "github.com/visendi-labs/mapbox-gl-gojs"
@@ -19,12 +24,12 @@ func main() {
 	points1 := geojson.NewFeatureCollection()
 	points2 := geojson.NewFeatureCollection()
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 200; i++ {
 		line1 := orb.LineString{}
 		line2 := orb.LineString{}
-		for j := 0; j < 5; j++ {
-			line1 = append(line1, orb.Point{-30 + rand.Float64()*60, -30 + rand.Float64()*60})
-			line2 = append(line2, orb.Point{rand.Float64() * 60, rand.Float64() * 60})
+		for j := 0; j < 8; j++ {
+			line1 = append(line1, orb.Point{math.Round((-40+rand.Float64()*80)*1000) / 1000, math.Round((-40+rand.Float64()*80)*1000) / 1000})
+			line2 = append(line2, orb.Point{math.Round((rand.Float64()*80)*1000) / 1000, math.Round((rand.Float64()*80)*1000) / 1000})
 		}
 		lines1.Append(geojson.NewFeature(line1))
 		lines2.Append(geojson.NewFeature(line2))
@@ -37,7 +42,7 @@ func main() {
 	mapbox := mbgojs.NewScript(
 		mbgojs.NewMap(mbgojs.Map{
 			Container:   "map",
-			AccessToken: "<token>",
+			AccessToken: os.Getenv("MAPBOX_ACCESS_TOKEN"),
 			Hash:        true,
 			Config:      mbgojs.MapConfig{Basemap: mbgojs.BasemapConfig{Theme: "faded"}},
 		}),
@@ -133,6 +138,8 @@ func main() {
 	}
 
 	r := gin.Default()
+	// r.Use(gin.LoggerWithWriter(gin.DefaultWriter, "/hover"))
+	r.Use(gzip.Gzip(gzip.BestCompression))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -156,25 +163,70 @@ func main() {
 		}
 		t.Execute(c.Writer, nil)
 	})
+	r.POST("/filter", func(ctx *gin.Context) {
+		distance := ctx.PostForm("distance")
+		dist, _ := strconv.Atoi(distance)
+		lines := geojson.NewFeatureCollection()
+
+		for _, l := range lines1.Features {
+			d := 0.0
+			points := l.Geometry.(orb.LineString)
+			for i := 1; i < len(points); i++ {
+				d += geo.DistanceHaversine(points[i-1].Point(), points[i].Point())
+			}
+			if d >= float64(dist) {
+				lines.Append(l)
+			}
+		}
+		t, err := template.New("").Parse(string(mbgojs.NewScript(
+			mbgojs.NewMapSourceSetData("sourceId1", lines),
+		).MustRender(mbgojs.RenderConfig{})))
+		if err != nil {
+			ctx.Status(http.StatusInternalServerError)
+		}
+		t.Execute(ctx.Writer, nil)
+	})
 	r.GET("/click", func(ctx *gin.Context) {
 		feature := ctx.Query("feature")
-		lng := ctx.Query("lng")
-		lat := ctx.Query("lat")
+		lng, _ := strconv.ParseFloat(ctx.Query("lng"), 64)
+		lat, _ := strconv.ParseFloat(ctx.Query("lat"), 64)
 		t, _ := template.New("page").Parse(`
 		<div>{{.Feature}} -- {{.Lat}} , {{.Lng}}</div>
+		{{.Popup}}
 		`)
 		if err := t.Execute(ctx.Writer, struct {
 			Feature string
-			Lat     string
-			Lng     string
+			Lat     float64
+			Lng     float64
+			Popup   template.HTML
 		}{
 			Feature: feature,
 			Lat:     lat,
 			Lng:     lng,
+			Popup:   template.HTML(mbgojs.NewScript(mbgojs.NewPopup(geojson.Point{lng, lat}, "<h1>Hello</h1>")).MustRender(mbgojs.RenderConfig{})),
 		}); err != nil {
 			ctx.Status(http.StatusInternalServerError)
 			return
 		}
+	})
+	r.GET("/new-source", func(ctx *gin.Context) {
+		source := ctx.Query("source")
+		g := geojson.NewFeatureCollection()
+		for i := 0; i < 20; i++ {
+			g.Append(geojson.NewFeature(orb.LineString{
+				orb.Point{rand.Float64() * -50, rand.Float64() * 50},
+				orb.Point{rand.Float64() * -50, rand.Float64() * 50},
+				orb.Point{rand.Float64() * -50, rand.Float64() * 50},
+				orb.Point{rand.Float64() * -50, rand.Float64() * 50},
+			}))
+		}
+		t, err := template.New("").Parse(string(mbgojs.NewScript(
+			mbgojs.NewMapSourceSetData(source, g),
+		).MustRender(mbgojs.RenderConfig{})))
+		if err != nil {
+			ctx.Status(http.StatusInternalServerError)
+		}
+		t.Execute(ctx.Writer, nil)
 	})
 	r.GET("/", func(ctx *gin.Context) {
 		t, _ := template.New("page").Parse(`<html><head>
@@ -183,6 +235,16 @@ func main() {
 			<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
 		</head><body style="margin:0">
 			<div id="testtarget"></div>
+			<div>
+				<button hx-get="new-source?source=sourceId1" hx-target="body" hx-swap="beforeend">Click</button>
+				<button hx-get="new-source?source=sourceId2" hx-target="body" hx-swap="beforeend">Click</button>
+
+			</div>
+			<div>
+				<form hx-post="/filter" hx-trigger="input" hx-swap="beforeend">
+				<input type="range" style="width:500px" name="distance" min="1000" max="50000000" step="1000"></input>
+				</form>
+			</div>
 			<div id="map" style="width:100vw; height:100vh;"></div>
 			{{.}}</body></html>`)
 
