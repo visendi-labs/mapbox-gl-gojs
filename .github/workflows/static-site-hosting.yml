@@ -34,7 +34,12 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.25'
+          check-latest: true
+          cache-dependency-path: "**/*.sum"
+
       - name: Build Go application
         env:
           MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}

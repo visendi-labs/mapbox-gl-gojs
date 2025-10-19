@@ -2,7 +2,9 @@ package mapboxglgojs
 
 import "github.com/paulmach/orb"
 
-type MapPaint struct {
+// TODO: make this stricter? How to separate the different options for the values?
+
+type MapLayerPaint struct {
 	// Common
 	Opacity any `json:"opacity,omitempty"`
 
