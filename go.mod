@@ -5,9 +5,10 @@ go 1.25.0
 require (
 	github.com/gin-contrib/gzip v1.2.3
 	github.com/gin-gonic/gin v1.10.1
-	github.com/json-iterator/go v1.1.12
 	github.com/paulmach/orb v0.11.1
 )
+
+require github.com/json-iterator/go v1.1.12 // indirect
 
 require (
 	github.com/bytedance/sonic v1.13.2 // indirect
