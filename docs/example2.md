@@ -1,6 +1,6 @@
 # Random lines 
 [Full code](http://example.com)
-<iframe src="/example2/wasm/index.html" height="400"> </iframe>
+<iframe src="example2/wasm/index.html" height="400"> </iframe>
 
 `index.html` Parsed by Golang html/template
 

@@ -1,6 +1,6 @@
 # Hover 
 [Full code](http://example.com)
-<iframe src="/example3/wasm/index.html" height="400"> </iframe>
+<iframe src="example3/wasm/index.html" height="400"> </iframe>
 
 `index.html` Parsed by Golang html/template
 
