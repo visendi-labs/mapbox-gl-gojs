@@ -4,10 +4,10 @@ name: Static Hosting Pipeline
 on:
   push:
     # Trigger on pushes to any branch
-    branches: ['*']
+    branches: ['**']
   pull_request:
     # Trigger on pull requests from any branch
-    branches: ['*']
+    branches: ['**']
 
 jobs:
   build-and-deploy:
@@ -38,11 +38,12 @@ jobs:
       # 4️⃣ Build the Go application (WebAssembly)
       - name: Build Go application
         env:
-          MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}   # <-- correct key
+          MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
         run: |
           cd docs
           chmod +x wasm_compile_all.sh
-          ./wasm_compile_all
+          ls -lah
+          ./wasm_compile_all.sh
 
       # 5️⃣ Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
