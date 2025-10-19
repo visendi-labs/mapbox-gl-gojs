@@ -9,16 +9,19 @@ on:
     # Trigger on pull requests from any branch
     branches: ['**']
 
+# Give the workflow explicit permissions required for Pages deployment
+permissions:
+  contents: read        # keep read for source operations
+  pages: write          # required to deploy to GitHub Pages
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Cache Go modules (optional but speeds up builds)
       - name: Cache Go modules
         uses: actions/cache@v3
         with:
@@ -29,13 +32,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      # 3️⃣ Set up Go from go.mod
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
 
-      # 4️⃣ Build the Go application (WebAssembly)
       - name: Build Go application
         env:
           MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
@@ -45,9 +46,12 @@ jobs:
           ls -lah
           ./wasm_compile_all.sh
 
-      # 5️⃣ Deploy to GitHub Pages
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      # Upload the generated static site as a Pages artifact
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}   # <-- required for write access
-          publish_dir: ./docs
+          path: ./docs
+
+      # Deploy the uploaded artifact to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v1
