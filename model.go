@@ -117,17 +117,17 @@ type MapLayout struct {
 
 type Map struct {
 	// Required
-	Container   string    `json:"container,omitempty"` // HTML element id or reference
-	Style       string    `json:"style,omitempty"`     // Style URL or JSON object
-	Center      orb.Point `json:"center,omitempty"`    // [lng, lat]
-	Zoom        float64   `json:"zoom,omitempty"`
+	Container   string    `json:"container,omitempty"`       // HTML element id or reference
+	Style       string    `json:"style,omitempty"`           // Style URL or JSON object
+	Center      orb.Point `json:"center,omitempty,omitzero"` // [lng, lat]
+	Zoom        float64   `json:"zoom,omitempty,omitzero"`
 	AccessToken string    `json:"accessToken,omitempty"`
 
 	// Optional view state
-	Bearing          float64   `json:"bearing,omitempty"` // Map rotation in degrees
-	Pitch            float64   `json:"pitch,omitempty"`   // Tilt in degrees
-	Bounds           []float64 `json:"bounds,omitempty"`  // [minX, minY, maxX, maxY]
-	FitBoundsOptions any       `json:"fitBoundsOptions,omitempty"`
+	Bearing          float64   `json:"bearing,omitempty,omitzero"` // Map rotation in degrees
+	Pitch            float64   `json:"pitch,omitempty,omitzero"`   // Tilt in degrees
+	Bounds           []float64 `json:"bounds,omitempty,omitzero"`  // [minX, minY, maxX, maxY]
+	FitBoundsOptions any       `json:"fitBoundsOptions,omitempty,omitzero"`
 
 	// Interaction controls
 	Interactive     bool `json:"interactive,omitempty"`
@@ -139,9 +139,9 @@ type Map struct {
 	TouchZoomRotate bool `json:"touchZoomRotate,omitempty"`
 
 	// Render/Performance options
-	MinZoom                      float64   `json:"minZoom,omitempty"`
-	MaxZoom                      float64   `json:"maxZoom,omitempty"`
-	MaxBounds                    []float64 `json:"maxBounds,omitempty"` // [minX, minY, maxX, maxY]
+	MinZoom                      float64   `json:"minZoom,omitempty,omitzero"`
+	MaxZoom                      float64   `json:"maxZoom,omitempty,omitzero"`
+	MaxBounds                    []float64 `json:"maxBounds,omitempty,omitzero"` // [minX, minY, maxX, maxY]
 	PreserveDrawingBuffer        bool      `json:"preserveDrawingBuffer,omitempty"`
 	Antialias                    bool      `json:"antialias,omitempty"`
 	TrackResize                  bool      `json:"trackResize,omitempty"`
