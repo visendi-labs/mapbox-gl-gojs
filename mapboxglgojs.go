@@ -188,6 +188,13 @@ func NewMapOnLoad(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetColle
 	return NewMapOnEvent("load", c...)
 }
 
+func (esc EnclosedSnippetCollectionRenderable) MustRenderDefault() string {
+	s, err := esc.Render(RenderConfig{})
+	if err != nil {
+		panic(err)
+	}
+	return string(s)
+}
 func (esc EnclosedSnippetCollectionRenderable) MustRender(config RenderConfig) htmltemplate.JS {
 	s, err := esc.Render(config)
 	if err != nil {

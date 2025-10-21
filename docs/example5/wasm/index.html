@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css' rel='stylesheet' />
+</head>
+
+<body style="padding:0; margin:0">
+    <div id="map" style="width:100vw; height:100vh;"></div>
+    <script src="../../wasm_exec.js"></script>
+    <script>
+        const go = new Go(); // defined in wasm_exec.js
+
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject)
+            .then((result) => {
+                go.run(result.instance);
+                let script = document.createElement("script")
+                script.textContent = example()
+                document.body.appendChild(script)
+            });
+    </script>
+</body>
+
+</html>

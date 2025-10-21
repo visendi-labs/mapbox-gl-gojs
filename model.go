@@ -155,11 +155,11 @@ type Map struct {
 	Hash bool `json:"hash,omitempty"` // Track position in URL hash
 
 	// Your custom config
-	Config MapConfig `json:"config,omitempty"`
+	Config MapConfig `json:"config,omitempty,omitzero"`
 }
 
 type MapConfig struct {
-	Basemap BasemapConfig `json:"basemap,omitempty"`
+	Basemap BasemapConfig `json:"basemap,omitempty,omitzero"`
 }
 
 type BasemapConfig struct {

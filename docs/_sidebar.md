@@ -1,6 +1,7 @@
 * [Home](/)
-* [Examples](/examples.md)
+* [Examples (start here)](/examples.md)
     * Basic
-        * [Random lines](/example2.md "Random lines")
-        * [Hover lines](/example3.md "Hover lines")
-        * [Heatmap](/example4.md "Heatmap")
+        * [Lines](/example2.md)
+        * [Hover lines](/example3.md)
+        * [Heatmap](/example4.md)
+        * [Popups](/example5.md)
