@@ -15,9 +15,12 @@
   <script>
     window.$docsify = {
       name: '',
-      repo: ''
-    }
-    window.$docsify = {
+      repo: '',
+      // basePath: '/docs/',
+      alias: {
+        // '/mapbox-gl-gojs/(.*)': '/$1', // supports regexp
+        // '/docs/(.*)': '/$1', // supports regexp
+      },
       loadSidebar: true
     }
   </script>
