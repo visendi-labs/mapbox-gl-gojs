@@ -175,4 +175,5 @@ type BasemapConfig struct {
 	ShowTransit            bool   `json:"showTransit,omitempty"`
 	ShowTerrain            bool   `json:"showTerrain,omitempty"`
 	ShowWater              bool   `json:"showWater,omitempty"`
+	LightPreset            string `json:"lightPreset,omitempty"`
 }

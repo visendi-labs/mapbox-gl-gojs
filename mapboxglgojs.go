@@ -113,16 +113,17 @@ func NewMapOnEventLayerCursor(event, layer, cursor string) EnclosedSnippetCollec
 }
 
 // TODO add all options in Popup constructor
-func NewPopup(lngLat geojson.Point, html string) EnclosedSnippetCollectionRenderable {
+func NewPopup(lngLat geojson.Point, altitude float64, html string) EnclosedSnippetCollectionRenderable {
 	coord, err := json.Marshal([2]float64{lngLat[0], lngLat[1]})
 	if err != nil {
 		panic(err)
 	}
 	return NewEnclosedSnippetCollection(
-		`(new mapboxgl.Popup({ closeOnClick: false })).setLngLat({{.Data.coord}}).setHTML("{{.Data.html}}").addTo(map);`,
-		map[string]string{
-			"coord": string(coord),
-			"html":  html,
+		`(new mapboxgl.Popup({ closeOnClick: false, altitude: {{.Data.altitude}} })).setLngLat({{.Data.coord}}).setHTML("{{.Data.html}}").addTo(map);`,
+		map[string]any{
+			"coord":    string(coord),
+			"altitude": altitude,
+			"html":     html,
 		},
 	)
 
