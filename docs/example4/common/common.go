@@ -8,8 +8,8 @@ import (
 	mapboxglgojs "github.com/visendi-labs/mapbox-gl-gojs"
 )
 
+// / ### [demo]
 func Example(token string) string {
-	/// [demo]
 	fc := geojson.NewFeatureCollection()
 	for i := 0; i < 100; i++ {
 		fc = fc.Append(&geojson.Feature{
@@ -18,7 +18,7 @@ func Example(token string) string {
 			Properties: geojson.Properties{"val": rand.Float64() * 1000},
 		})
 	}
-	m := mapboxglgojs.NewGroup(
+	return mapboxglgojs.NewGroup(
 		mapboxglgojs.NewMap(mapboxglgojs.Map{Container: "map", AccessToken: token}),
 		mapboxglgojs.NewMapOnLoad(
 			mapboxglgojs.NewMapAddSource("mySource", mapboxglgojs.MapSource{Type: "geojson", Data: fc, GenerateId: true}),
@@ -36,9 +36,7 @@ func Example(token string) string {
 				},
 			}),
 		),
-	)
-	/// [demo]
-
-	s := m.MustRender(mapboxglgojs.RenderConfig{})
-	return string(s)
+	).MustRenderDefault()
 }
+
+/// [demo]

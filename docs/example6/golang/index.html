@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css' rel='stylesheet' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+</head>
+
+<body style="padding:0; margin:0" hx-ext="fake-backend">
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+    <div id="map" style="width:100vw; height:100vh;"></div>
+    <div class="card z-3 position-absolute top-0 start-0 m-3">
+        <div class="card-body">
+            <label for="range1" class="form-label">Filter line distance</label>
+            <!-- HTMX map interactivity happens here! -->
+            <form hx-get="/filter" hx-trigger="input" hx-swap="beforeend" hx-target="body">
+                <input type="range" class="form-range" name="distance" min="1000" max="50000000" step="1000">
+            </form>
+        </div>
+    </div>
+    <script>
+        {{.}} // template engine (package html/template) puts base map config here
+    </script>
+</body>
+
+</html>

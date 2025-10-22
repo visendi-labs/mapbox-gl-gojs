@@ -4,3 +4,5 @@
     * [Hover lines](/example3.md)
     * [Heatmap](/example4.md)
     * [Popups + Map config](/example5.md)
+* Examples HTMX Interactive Serverside Rendering
+    * [Serverside line filter](/example6.md)

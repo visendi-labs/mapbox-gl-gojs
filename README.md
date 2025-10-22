@@ -68,3 +68,5 @@ func main() {
 - Improve type safety
 - Fix render config
 - Acutal template files/file? Multiple defines in one file? #embed
+- Add support for the mapbox draw extension tool?
+- Use common template/index.html in examples
