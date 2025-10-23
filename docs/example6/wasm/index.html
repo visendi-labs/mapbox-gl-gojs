@@ -28,17 +28,8 @@
         </div>
     </div>
     <script src="../../wasm_exec.js"></script>
+    <script src="../../load_main_wasm_example.js"></script>
     <script>
-        const go = new Go(); // defined in wasm_exec.js
-
-        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject)
-            .then((result) => {
-                go.run(result.instance);
-                let script = document.createElement("script")
-                script.textContent = example()
-                document.body.appendChild(script)
-            });
-
         htmx.defineExtension('fake-backend', {
             onEvent: function (name, evt) {
                 if (name === "htmx:beforeRequest") {
@@ -49,13 +40,17 @@
                     let resp = filter(d)
                     evt.detail.serverResponse = resp
                     evt.detail.xhr.onload();
-                    document.getElementById("list-group").innerHTML = `<li class="list-group-item">${path}
-                        <button type="button" class="btn btn-sm float-end btn-outline-success" disabled>200 OK</button></li>` + document.getElementById("list-group").innerHTML
+                    // HTMX OOB SWAP HERE, INCLUDE THIS IN THE RESP? OR JUST REMOVE?
+                    // document.body.innerHTML += resp
                     return false;
                 }
             },
         })
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
 </body>
 
 </html>

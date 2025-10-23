@@ -1,5 +1,7 @@
 # Mapbox GL GOJS
-Interactive map and geo visualization for Golang. Generate https://github.com/mapbox/mapbox-gl-js HTML.
+Interactive map and geo visualization for Golang. Generate [Mapbox](https://github.com/mapbox/mapbox-gl-js) HTML.
+
+DOCS: https://visendi-labs.github.io/mapbox-gl-gojs/#/
 
 ### Minimal Example
 
@@ -70,3 +72,4 @@ func main() {
 - Acutal template files/file? Multiple defines in one file? #embed
 - Add support for the mapbox draw extension tool?
 - Use common template/index.html in examples
+- Fix mapbox config (& more) defaults

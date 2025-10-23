@@ -14,7 +14,7 @@ func main() {
 
 	tmpl := template.Must(template.ParseFiles("index.html"))
 	router.GET("/", func(c *gin.Context) {
-		tmpl.Execute(c.Writer, template.HTML(common.Example(os.Getenv("MAPBOX_ACCESS_TOKEN"))))
+		tmpl.Execute(c.Writer, template.JS(common.Example(os.Getenv("MAPBOX_ACCESS_TOKEN"))))
 	})
 	router.Run(":8080")
 }
