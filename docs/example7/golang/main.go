@@ -8,7 +8,7 @@ import (
 	"github.com/visendi-labs/mapbox-gl-gojs/docs/example6/common"
 )
 
-/// [demo]
+// / ### [demo]
 func main() {
 	router := gin.Default()
 	tmpl := template.Must(template.ParseFiles("index.html"))

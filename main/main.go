@@ -203,7 +203,7 @@ func main() {
 			Feature: feature,
 			Lat:     lat,
 			Lng:     lng,
-			Popup:   template.HTML(mbgojs.NewScript(mbgojs.NewPopup(geojson.Point{lng, lat}, "<h1>Hello</h1>")).MustRender(mbgojs.RenderConfig{})),
+			Popup:   template.HTML(mbgojs.NewScript(mbgojs.NewPopup(geojson.Point{lng, lat}, 10, "<h1>Hello</h1>")).MustRender(mbgojs.RenderConfig{})),
 		}); err != nil {
 			ctx.Status(http.StatusInternalServerError)
 			return

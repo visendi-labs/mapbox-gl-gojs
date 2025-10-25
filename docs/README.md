@@ -1,6 +1,22 @@
 # MAPBOX-GL-GOJS
 
-Interactive map and geo visualization for Golang.
+Interactive map and geo visualization for Golang. Generate [Mapbox](https://github.com/mapbox/mapbox-gl-js) HTML.
+
+https://github.com/visendi-labs/mapbox-gl-gojs
+
+
+## NB
+- You'll need a Mapbox API key to display the map when running locally: https://docs.mapbox.com/mapbox-gl-js/guides/.
+
+## HTMX
+HTMX can be used to together with Mapbox-GL-GOJS to tie interactivity content/config changes from the server. Mapbox-GL-GOJS even comes with some built-in HTMX support, so that you can (serverside) generate a map setup that ties map events to HTMX calls (that will make further request to your server).
+
+#
+#
+#
+#
+#
+#
 
 ```
 Swedish
