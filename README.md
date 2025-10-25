@@ -73,3 +73,4 @@ func main() {
 - Add support for the mapbox draw extension tool?
 - Use common template/index.html in examples
 - Fix mapbox config (& more) defaults
+- Option to add layers wihout specifying id (random)?

@@ -16,38 +16,32 @@ import (
 // / ### [demo]
 
 //go:embed icon.png
-var imgData []byte
+var foodIcon []byte
 
 func Example(token string) string {
-	img, _, _ := image.Decode(bytes.NewReader(imgData))
+	img, _, _ := image.Decode(bytes.NewReader(foodIcon))
 
-	points1, points2 := geojson.NewFeatureCollection(), geojson.NewFeatureCollection()
+	p1, p2 := geojson.NewFeatureCollection(), geojson.NewFeatureCollection()
 	for range 100 {
-		points1.Append(geojson.NewFeature(orb.Point{rand.Float64() * 40, rand.Float64() * 30}))
-		points2.Append(geojson.NewFeature(orb.Point{rand.Float64() * 40, rand.Float64() * -30}))
+		p1.Append(geojson.NewFeature(orb.Point{rand.Float64() * 40, rand.Float64() * 30}))
+		p2.Append(geojson.NewFeature(orb.Point{rand.Float64() * 40, rand.Float64() * -30}))
 	}
 	return mapboxglgojs.NewGroup(
-		mapboxglgojs.NewMap(mapboxglgojs.Map{Container: "map", AccessToken: token}),
+		mapboxglgojs.NewMap(mapboxglgojs.Map{Container: "map", AccessToken: token, Zoom: 2.5, Config: mapboxglgojs.MapConfig{
+			Basemap: mapboxglgojs.BasemapConfig{Theme: "monochrome", LightPreset: "dawn"},
+		}}),
 		mapboxglgojs.NewMapOnLoad(
-			mapboxglgojs.NewMapAddImageCircle("myCircleImage", 5, 2),
+			mapboxglgojs.NewMapAddImageCircle("circle", 5, 2),
 			mapboxglgojs.NewMapAddImage("food", img),
 			mapboxglgojs.NewMapAddLayer(mapboxglgojs.MapLayer{
-				Id:     "points1",
-				Type:   "symbol",
-				Source: mapboxglgojs.MapSource{Type: "geojson", Data: *points1},
-				Layout: mapboxglgojs.MapLayout{
-					IconImage:        "myCircleImage",
-					IconAllowOverlap: true,
-				},
+				Id: "points1", Type: "symbol",
+				Source: mapboxglgojs.MapSource{Type: "geojson", Data: *p1},
+				Layout: mapboxglgojs.MapLayout{IconImage: "circle", IconAllowOverlap: true},
 			}),
 			mapboxglgojs.NewMapAddLayer(mapboxglgojs.MapLayer{
-				Id:     "points2",
-				Type:   "symbol",
-				Source: mapboxglgojs.MapSource{Type: "geojson", Data: *points2},
-				Layout: mapboxglgojs.MapLayout{
-					IconImage:        "food",
-					IconAllowOverlap: true,
-				},
+				Id: "points2", Type: "symbol",
+				Source: mapboxglgojs.MapSource{Type: "geojson", Data: *p2},
+				Layout: mapboxglgojs.MapLayout{IconImage: "food", IconAllowOverlap: true},
 			}),
 		),
 	).MustRenderDefault()
