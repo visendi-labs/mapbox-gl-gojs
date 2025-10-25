@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	htmltemplate "html/template"
+	"image"
+	"image/color"
 	"math"
 	"math/rand/v2"
 	"strconv"
@@ -153,7 +155,7 @@ func NewMapAddImageCircle(name string, rad int, border float64) EnclosedSnippetC
 			}
 		}
 	}
-	return NewMapAddImage(name, base64.StdEncoding.EncodeToString(circleImg), rad*2, rad*2)
+	return NewMapAddImageBase64(name, base64.StdEncoding.EncodeToString(circleImg), rad*2, rad*2)
 }
 
 func NewMapAddImageRectangle(name string, height, width, border int) EnclosedSnippetCollectionRenderable {
@@ -167,12 +169,50 @@ func NewMapAddImageRectangle(name string, height, width, border int) EnclosedSni
 			}
 		}
 	}
-	return NewMapAddImage(name, base64.StdEncoding.EncodeToString(squareImg), height, width)
+	return NewMapAddImageBase64(name, base64.StdEncoding.EncodeToString(squareImg), height, width)
 }
 
-func NewMapAddImage(name, imgBase64 string, height, width int) EnclosedSnippetCollectionRenderable {
+func missingImageRGBA() image.RGBA {
+	const w, h = 128, 128
+	img := image.NewRGBA(image.Rect(0, 0, w, h))
+
+	// light gray background
+	bg := color.RGBA{200, 200, 200, 255}
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			img.SetRGBA(x, y, bg)
+		}
+	}
+
+	// dark X
+	xcol := color.RGBA{80, 80, 80, 255}
+	for i := 0; i < w; i++ {
+		img.SetRGBA(i, i, xcol)     // \ diagonal
+		img.SetRGBA(w-1-i, i, xcol) // / diagonal
+	}
+
+	return *img
+}
+
+func rawPixelsToBase64(img image.Image) (string, image.Rectangle) {
+	switch v := img.(type) {
+	case *image.RGBA:
+		return base64.StdEncoding.EncodeToString(v.Pix), img.Bounds()
+	case *image.NRGBA:
+		return base64.StdEncoding.EncodeToString(v.Pix), img.Bounds()
+	}
+	i := missingImageRGBA()
+	return base64.StdEncoding.EncodeToString(i.Pix), i.Bounds()
+}
+
+func NewMapAddImage(name string, image image.Image) EnclosedSnippetCollectionRenderable {
+	b64, bounds := rawPixelsToBase64(image)
+	return NewMapAddImageBase64(name, b64, bounds.Dy(), bounds.Dx())
+}
+
+func NewMapAddImageBase64(name, imgBase64 string, height, width int) EnclosedSnippetCollectionRenderable {
 	return NewEnclosedSnippetCollection(
-		`map.addImage("{{.Data.name}}",{width:{{.Data.width}},height:{{.Data.height}},data:Uint8Array.fromBase64("{{.Data.img}}") });`,
+		`map.addImage("{{.Data.name}}",{width: {{.Data.width}}, height: {{.Data.height}}, data: Uint8Array.fromBase64("{{.Data.img}}")});`,
 		map[string]string{
 			"name":   name,
 			"img":    imgBase64,
