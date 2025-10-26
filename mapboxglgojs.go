@@ -47,6 +47,10 @@ func NewEnclosedSnippetCollection(template string, data any, c ...EnclosedSnippe
 	})
 }
 
+func NewTemplate(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
+	return NewEnclosedSnippetCollection(`<template>{{.Children }}</template>`, map[string]string{}, c...)
+}
+
 func NewScript(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
 	// Add script tag type as input? Like async, module or things like that
 	return NewEnclosedSnippetCollection(`<script>{{.Children }}</script>`, map[string]string{}, c...)
