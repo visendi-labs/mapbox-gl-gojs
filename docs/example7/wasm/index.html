@@ -11,6 +11,10 @@
 
 <body style="padding:0; margin:0" hx-ext="fake-backend">
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
     <div id="map" style="width:100vw; height:100vh;"></div>
     <div class="card z-3 position-absolute top-0 start-0 m-3">
         <div class="card-body">
@@ -23,8 +27,7 @@
     </div>
     <div class="card z-3 position-absolute top-0 end-0 mh-75 h-75 col-4 m-3 overflow-auto">
         <div class="card-body">
-            <ul class="list-group" id="list-group">
-            </ul>
+            <ul class="list-group" id="list-group"></ul>
         </div>
     </div>
     <script src="../../wasm_exec.js"></script>
@@ -40,17 +43,11 @@
                     let resp = filter(d)
                     evt.detail.serverResponse = resp
                     evt.detail.xhr.onload();
-                    // HTMX OOB SWAP HERE, INCLUDE THIS IN THE RESP? OR JUST REMOVE?
-                    // document.body.innerHTML += resp
                     return false;
                 }
             },
         })
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
-
 </body>
 
 </html>

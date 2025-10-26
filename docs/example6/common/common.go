@@ -6,6 +6,7 @@ import (
 	"math/rand/v2"
 
 	_ "embed"
+	"image/color"
 	_ "image/png"
 
 	"github.com/paulmach/orb"
@@ -16,10 +17,10 @@ import (
 // / ### [demo]
 
 //go:embed icon.png
-var foodIcon []byte
+var takeawayFood []byte
 
 func Example(token string) string {
-	img, _, _ := image.Decode(bytes.NewReader(foodIcon))
+	img, _, _ := image.Decode(bytes.NewReader(takeawayFood))
 
 	p1, p2 := geojson.NewFeatureCollection(), geojson.NewFeatureCollection()
 	for range 100 {
@@ -31,7 +32,7 @@ func Example(token string) string {
 			Basemap: mapboxglgojs.BasemapConfig{Theme: "monochrome", LightPreset: "dawn"},
 		}}),
 		mapboxglgojs.NewMapOnLoad(
-			mapboxglgojs.NewMapAddImageCircle("circle", 5, 2),
+			mapboxglgojs.NewMapAddImageCircle("circle", 5, 2, color.RGBA{10, 10, 10, 255}, color.RGBA{80, 150, 200, 255}),
 			mapboxglgojs.NewMapAddImage("food", img),
 			mapboxglgojs.NewMapAddLayer(mapboxglgojs.MapLayer{
 				Id: "points1", Type: "symbol",

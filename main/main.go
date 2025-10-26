@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"image/color"
 	"math"
 	"math/rand/v2"
 	"net/http"
@@ -48,7 +49,7 @@ func main() {
 		}),
 		mbgojs.NewMapOnLoad(
 			mbgojs.NewMapAddImageRectangle("square", 20, 20, 4),
-			mbgojs.NewMapAddImageCircle("circle", 10, 2),
+			mbgojs.NewMapAddImageCircle("circle", 10, 2, color.RGBA{10, 10, 10, 255}, color.RGBA{80, 255, 50, 255}),
 			mbgojs.NewMapAddSource(
 				"sourceId1", mbgojs.MapSource{Type: "geojson", Data: lines1, GenerateId: true},
 			),
