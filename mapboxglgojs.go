@@ -139,7 +139,7 @@ func NewConsoleLog(log string) EnclosedSnippetCollectionRenderable {
 	return NewEnclosedSnippetCollection("console.log({{.Data.data}});", map[string]string{"data": log})
 }
 
-func NewMapAddImageCircle(name string, rad int, border float64) EnclosedSnippetCollectionRenderable {
+func NewMapAddImageCircle(name string, rad int, border float64, borderColor, circleColor color.RGBA) EnclosedSnippetCollectionRenderable {
 	circleImg := []byte{}
 	for i := 0; i < rad*2; i++ {
 		for j := 0; j < rad*2; j++ {
@@ -147,9 +147,9 @@ func NewMapAddImageCircle(name string, rad int, border float64) EnclosedSnippetC
 			r := math.Pow(float64(rad), 2)
 			b := math.Pow(float64(rad)-border, 2)
 			if c > b && c < r {
-				circleImg = append(circleImg, 30, 30, 30, 255)
+				circleImg = append(circleImg, borderColor.R, borderColor.G, borderColor.B, borderColor.A)
 			} else if c < r {
-				circleImg = append(circleImg, 60, 150, 200, 255)
+				circleImg = append(circleImg, circleColor.R, circleColor.G, circleColor.B, circleColor.A)
 			} else {
 				circleImg = append(circleImg, 0, 0, 0, 0)
 			}
