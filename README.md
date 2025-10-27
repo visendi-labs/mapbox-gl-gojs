@@ -74,3 +74,4 @@ func main() {
 - Use common template/index.html in examples
 - Fix mapbox config (& more) defaults
 - Option to add layers wihout specifying id (random)?
+- Run some tesing on different render/output configs. E.g. how different float roundings affect SSR response sizes.

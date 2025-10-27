@@ -15,8 +15,6 @@ HTMX can be used to together with Mapbox-GL-GOJS to tie interactivity content/co
 #
 #
 #
-#
-#
 
 ```
 Swedish

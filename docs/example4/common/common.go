@@ -11,7 +11,7 @@ import (
 // / ### [demo]
 func Example(token string) string {
 	fc := geojson.NewFeatureCollection()
-	for i := 0; i < 50; i++ {
+	for range 50 {
 		fc = fc.Append(&geojson.Feature{
 			Type:       "Feature",
 			Geometry:   orb.Point{-30.0 + rand.Float64()*60, -30.0 + rand.Float64()*60},

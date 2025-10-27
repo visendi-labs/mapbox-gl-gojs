@@ -11,9 +11,9 @@ import (
 // / ### [demo]
 func Example(token string) string {
 	lines := geojson.NewFeatureCollection()
-	for i := 0; i < 20; i++ {
+	for range 20 {
 		line := orb.LineString{}
-		for j := 0; j < 8; j++ {
+		for range 8 {
 			line = append(line, orb.Point{-45 + rand.Float64()*90, -45 + rand.Float64()*90})
 		}
 		lines.Append(geojson.NewFeature(line))
