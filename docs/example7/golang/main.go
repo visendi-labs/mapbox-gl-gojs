@@ -11,6 +11,7 @@ import (
 
 // / ### [demo]
 func main() {
+	common.CreateLines()
 	router := gin.Default()
 	router.Use(gzip.Gzip(gzip.BestCompression))
 

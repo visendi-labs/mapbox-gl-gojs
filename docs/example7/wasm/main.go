@@ -11,6 +11,7 @@ import (
 var Token = "<token>"
 
 func main() {
+	common.CreateLines()
 	example := func(this js.Value, args []js.Value) any {
 		return common.Example(Token)
 	}

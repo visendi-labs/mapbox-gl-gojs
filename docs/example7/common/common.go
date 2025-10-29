@@ -24,7 +24,6 @@ func CreateLines() {
 }
 
 func Example(token string) string {
-	CreateLines()
 	return mapboxglgojs.NewGroup(
 		mapboxglgojs.NewMap(mapboxglgojs.Map{Container: "map", AccessToken: token}),
 		mapboxglgojs.NewMapOnLoad(

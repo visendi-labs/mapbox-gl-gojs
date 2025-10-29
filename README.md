@@ -75,3 +75,10 @@ func main() {
 - Fix mapbox config (& more) defaults
 - Option to add layers wihout specifying id (random)?
 - Run some tesing on different render/output configs. E.g. how different float roundings affect SSR response sizes.
+- Talk more about generating/loading images in docs
+- Talk about gzip in docs. Also related to the render output config point above
+    - Maybe some apache echart/chartjs charts on the output sizes on different render- and zip configs. Also CPU time for applying settings/zip
+	- Maybe link to that Wiki page on coordinate degree decimals? https://en.wikipedia.org/wiki/Decimal_degrees#Precision
+	- The config settings of being able to set rounding of coords is also tied to the type safety point. Type safety probably has to come first? So that funcs can go in and find floats to round etc.
+- Add something about 10x-ing your map / geo DX.
+- Talk about serverside cache headers (so the fetch requests can be cached by browser/user)
