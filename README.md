@@ -82,3 +82,5 @@ func main() {
 	- The config settings of being able to set rounding of coords is also tied to the type safety point. Type safety probably has to come first? So that funcs can go in and find floats to round etc.
 - Add something about 10x-ing your map / geo DX.
 - Talk about serverside cache headers (so the fetch requests can be cached by browser/user)
+- Example where color change happens in backend
+- Talk about redis

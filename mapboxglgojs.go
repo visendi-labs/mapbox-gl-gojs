@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/paulmach/orb/geojson"
 )
@@ -54,6 +55,12 @@ func NewTemplate(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollec
 func NewScript(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
 	// Add script tag type as input? Like async, module or things like that
 	return NewEnclosedSnippetCollection(`<script>{{.Children }}</script>`, map[string]string{}, c...)
+}
+
+func NewTimeout(t time.Duration, c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
+	return NewEnclosedSnippetCollection(`setTimeout(() => { {{.Children}} }, {{.Data.ms}})`, map[string]int64{
+		"ms": t.Milliseconds(),
+	}, c...)
 }
 
 func NewGroup(c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
@@ -119,17 +126,21 @@ func NewMapOnEventLayerCursor(event, layer, cursor string) EnclosedSnippetCollec
 }
 
 // TODO add all options in Popup constructor
-func NewPopup(lngLat geojson.Point, altitude float64, html string) EnclosedSnippetCollectionRenderable {
+func NewPopup(lngLat geojson.Point, config PopupConfig, html string) EnclosedSnippetCollectionRenderable {
 	coord, err := json.Marshal([2]float64{lngLat[0], lngLat[1]})
 	if err != nil {
 		panic(err)
 	}
+	jsonConfig, err := json.Marshal(config)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return NewEnclosedSnippetCollection(
-		`(new mapboxgl.Popup({ closeOnClick: false, altitude: {{.Data.altitude}} })).setLngLat({{.Data.coord}}).setHTML("{{.Data.html}}").addTo(map);`,
+		`(new mapboxgl.Popup( {{.Data.config}} )).setLngLat({{.Data.coord}}).setHTML("{{.Data.html}}").addTo(map);`,
 		map[string]any{
-			"coord":    string(coord),
-			"altitude": altitude,
-			"html":     html,
+			"coord":  string(coord),
+			"config": string(jsonConfig),
+			"html":   html,
 		},
 	)
 
@@ -204,6 +215,8 @@ func rawPixelsToBase64(img image.Image) (string, image.Rectangle) {
 		return base64.StdEncoding.EncodeToString(v.Pix), img.Bounds()
 	case *image.NRGBA:
 		return base64.StdEncoding.EncodeToString(v.Pix), img.Bounds()
+	default:
+		fmt.Println(fmt.Errorf("failed to encode image"))
 	}
 	i := missingImageRGBA()
 	return base64.StdEncoding.EncodeToString(i.Pix), i.Bounds()

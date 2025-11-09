@@ -17,7 +17,7 @@ import (
 var lines = geojson.NewFeatureCollection()
 
 func CreateLines() {
-	for range 1000 {
+	for range 2000 {
 		line := orb.LineString{orb.Point{rand.Float64() * 90, rand.Float64() * 90}, orb.Point{rand.Float64() * 90, rand.Float64() * 90}}
 		lines.Append(geojson.NewFeature(line))
 	}
@@ -27,8 +27,8 @@ func Example(token string) string {
 	return mapboxglgojs.NewGroup(
 		mapboxglgojs.NewMap(mapboxglgojs.Map{Container: "map", AccessToken: token}),
 		mapboxglgojs.NewMapOnLoad(
-			mapboxglgojs.NewMapAddSource("mySource", mapboxglgojs.MapSource{Type: "geojson", Data: lines}),
-			mapboxglgojs.NewMapAddLayer(mapboxglgojs.MapLayer{Id: "myLayer", Type: "line", Source: "mySource"}),
+			mapboxglgojs.NewMapAddSource("mySrc", mapboxglgojs.MapSource{Type: "geojson", Data: lines}),
+			mapboxglgojs.NewMapAddLayer(mapboxglgojs.MapLayer{Id: "myLayer", Type: "line", Source: "mySrc"}),
 		),
 	).MustRenderDefault()
 }
@@ -42,7 +42,7 @@ func Filter(distance string) string {
 			filteredLines.Append(l)
 		}
 	}
-	script := mapboxglgojs.NewScript(mapboxglgojs.NewMapSourceSetData("mySource", filteredLines)).MustRenderDefault()
+	script := mapboxglgojs.NewScript(mapboxglgojs.NewMapSourceSetData("mySrc", filteredLines)).MustRenderDefault()
 
 	randomId := uuid.NewString()
 	respStatus := fmt.Sprintf(`

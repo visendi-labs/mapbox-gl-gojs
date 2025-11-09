@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css' rel='stylesheet' />
+</head>
+
+<body style="padding:0; margin:0" hx-ext="fake-backend">
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+
+    <div id="map" style="width:100vw; height:100vh;"></div>
+    <script src="../../wasm_exec.js"></script>
+    <script src="../../load_main_wasm_example.js"></script>
+    <script>
+        htmx.defineExtension('fake-backend', {
+            onEvent: function (name, evt) {
+                if (name === "htmx:beforeRequest") {
+                    let id = evt.detail.requestConfig.parameters.get("featureId")
+                    let lng = evt.detail.requestConfig.parameters.get("lng")
+                    let lat = evt.detail.requestConfig.parameters.get("lat")
+                    let path = evt.detail.pathInfo.finalRequestPath
+                    Object.defineProperty(evt.detail.xhr, "status", { value: 200, writable: false });
+                    evt.detail.keepIndicators = true; // prevent indicator cleanup when indicators will not be generated
+                    let resp = popup(id)
+                    evt.detail.serverResponse = resp
+                    evt.detail.xhr.onload();
+                    return false;
+                }
+            },
+        })
+    </script>
+</body>
+
+</html>

@@ -27,8 +27,8 @@ func Example(token string) string {
 			},
 		}),
 		mapboxglgojs.NewMapOnLoad(
-			mapboxglgojs.NewPopup(geojson.Point{18.071531, 59.326609}, 50, "<h3>Palace</h3>HTML<br><button>Button</button>"),
-			mapboxglgojs.NewPopup(geojson.Point{18.0647542, 59.3245777}, 50, "<h3>Church</h3>HTML<br><button>Button</button>"),
+			mapboxglgojs.NewPopup(geojson.Point{18.071531, 59.326609}, mapboxglgojs.PopupConfig{Altitude: 50}, "<h3>Palace</h3>HTML<br><button>Button</button>"),
+			mapboxglgojs.NewPopup(geojson.Point{18.0647542, 59.3245777}, mapboxglgojs.PopupConfig{Altitude: 50}, "<h3>Church</h3>HTML<br><button>Button</button>"),
 		),
 	).MustRenderDefault()
 }

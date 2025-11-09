@@ -177,3 +177,15 @@ type BasemapConfig struct {
 	ShowWater              bool   `json:"showWater,omitempty"`
 	LightPreset            string `json:"lightPreset,omitempty"`
 }
+
+type PopupConfig struct {
+	Altitude       float64 `json:"altitude,omitempty"`
+	Anchor         string  `json:"anchor,omitempty"`
+	ClassName      string  `json:"className,omitempty"`
+	CloseButton    bool    `json:"closeButton,omitempty"`
+	CloseOnClick   bool    `json:"closeOnClick,omitempty"`
+	CloseOnMove    bool    `json:"closeOnMove,omitempty"`
+	FocusAfterOpen bool    `json:"focusAfterOpen,omitempty"`
+	MaxWidth       float64 `json:"maxWidth,omitempty"`
+	Offset         any     `json:"offset,omitempty"`
+}

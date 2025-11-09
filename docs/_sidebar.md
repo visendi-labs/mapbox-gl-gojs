@@ -8,3 +8,4 @@
     * [Points/symbols](/example6.md)
 * Examples HTMX Interactive Serverside Rendering
     * [Serverside line filter](/example7.md)
+    * [Serverside Popups](/example8.md)
