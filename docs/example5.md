@@ -1,5 +1,5 @@
 # Popups + Map config 
-[Full code](http://example.com) (run with `go run main.go`  )
+[Full code](https://github.com/visendi-labs/mapbox-gl-gojs/tree/main/docs/example4/golang) (run with `go run main.go`  )
 
 [](example5/wasm/index.html ':include :type=iframe width=100% height=500px')
 

@@ -146,6 +146,14 @@ func NewPopup(lngLat geojson.Point, config PopupConfig, html string) EnclosedSni
 
 }
 
+func NewMapSetBasemapConfig(b BasemapConfig) EnclosedSnippetCollectionRenderable {
+	basemapJson, err := json.Marshal(b)
+	if err != nil {
+		panic(err)
+	}
+	return NewEnclosedSnippetCollection("map.setConfig('basemap', {{.Data.data}});", map[string]string{"data": string(basemapJson)})
+}
+
 func NewConsoleWarn(log string) EnclosedSnippetCollectionRenderable {
 	return NewEnclosedSnippetCollection("console.warn({{.Data.data}});", map[string]string{"data": log})
 }
@@ -188,7 +196,7 @@ func NewMapAddImageRectangle(name string, height, width, border int) EnclosedSni
 }
 
 func missingImageRGBA() image.RGBA {
-	const w, h = 128, 128
+	const w, h = 64, 64
 	img := image.NewRGBA(image.Rect(0, 0, w, h))
 
 	// light gray background

@@ -6,6 +6,7 @@
     * [Heatmap](/example4.md)
     * [Popups + Map config](/example5.md)
     * [Points/symbols](/example6.md)
-* Examples HTMX Interactive Serverside Rendering
+    * [Fill/polygon](/example6.1.md)
+* [Examples HTMX Interactive Serverside Rendering](/ssr_general.md)
     * [Serverside line filter](/example7.md)
     * [Serverside Popups](/example8.md)

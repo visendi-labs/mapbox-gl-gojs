@@ -84,3 +84,9 @@ func main() {
 - Talk about serverside cache headers (so the fetch requests can be cached by browser/user)
 - Example where color change happens in backend
 - Talk about redis
+- Grouping of lines in BE HTMX
+- Write text/explanations in all examples docs page
+- Map change style/config. I.e. loading layers and things
+- Rename this `mapboxglgojs.EnclosedSnippetCollectionRenderable`
+- Rename all examples from `exampleX` to some more descriptive name
+- Fix code fragment embeds not working?? 

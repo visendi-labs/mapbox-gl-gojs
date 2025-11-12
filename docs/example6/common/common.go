@@ -29,7 +29,7 @@ func Example(token string) string {
 	}
 	return mapboxglgojs.NewGroup(
 		mapboxglgojs.NewMap(mapboxglgojs.Map{Container: "map", AccessToken: token, Zoom: 2.5, Config: mapboxglgojs.MapConfig{
-			Basemap: mapboxglgojs.BasemapConfig{Theme: "monochrome", LightPreset: "dawn"},
+			Basemap: mapboxglgojs.BasemapConfig{Theme: "monochrome", LightPreset: "dusk"},
 		}}),
 		mapboxglgojs.NewMapOnLoad(
 			mapboxglgojs.NewMapAddImageCircle("circle", 5, 2, color.RGBA{10, 10, 10, 255}, color.RGBA{80, 150, 200, 255}),

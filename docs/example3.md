@@ -1,5 +1,5 @@
 # Hover 
-[Full code](http://example.com)
+[Full code](https://github.com/visendi-labs/mapbox-gl-gojs/tree/main/docs/example3/golang) (run with `go run main.go`)
 
 [](example3/wasm/index.html ':include :type=iframe width=100% height=500px')
 

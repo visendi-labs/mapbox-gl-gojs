@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/visendi-labs/mapbox-gl-gojs/docs/example6/common"
+	"github.com/visendi-labs/mapbox-gl-gojs/docs/example6.1/common"
 )
 
 // / ### [demo]
