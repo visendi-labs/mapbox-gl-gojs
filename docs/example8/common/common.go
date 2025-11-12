@@ -44,7 +44,7 @@ func Example(token string) string {
 	return mbgojs.NewGroup(
 		mbgojs.NewMap(mbgojs.Map{Container: "map", AccessToken: token}),
 		mbgojs.NewMapOnLoad(
-			mbgojs.NewMapSetBasemapConfig(mbgojs.BasemapConfig{LightPreset: "night"}),
+			mbgojs.NewMapSetBasemapConfig(mbgojs.BasemapConfig{LightPreset: "dawn"}),
 			mbgojs.NewMapAddImage("heart", img),
 			mbgojs.NewMapAddLayer(mbgojs.MapLayer{
 				Id: `points`, Type: "symbol",
