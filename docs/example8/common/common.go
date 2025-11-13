@@ -25,19 +25,27 @@ var points = geojson.NewFeatureCollection()
 func Popup(index string) string {
 	i, _ := strconv.Atoi(index)
 	p := points.Features[i].Point()
+	light := "day"
+	switch {
+	case p[0] > 120:
+		light = "dawn"
+	case p[0] > 80:
+		light = "night"
+	case p[0] > 40:
+		light = "dusk"
+	}
 	return mbgojs.NewScript(
-		mbgojs.NewPopup(
+		mbgojs.NewMapSetBasemapConfig(mbgojs.BasemapConfig{LightPreset: light}), mbgojs.NewPopup(
 			geojson.Point(p),
 			mbgojs.PopupConfig{CloseOnClick: true},
-			fmt.Sprintf("<b>Serverside Popup</b><p>Id: %d</p>", i),
-		),
-		mbgojs.NewMapJumpTo(mbgojs.CameraOptions{Center: p}, mbgojs.FlyToOptions{}),
+			fmt.Sprintf("<b>SSR Popup</b><p>Id: %d</p>", i),
+		), mbgojs.NewMapFlyTo(mbgojs.CameraOptions{Center: p}, mbgojs.FlyToOptions{}),
 	).MustRenderDefault()
 }
 
 func GeneratePoints() {
 	for i := range 200 {
-		points.Append(&geojson.Feature{ID: i, Geometry: orb.Point{rand.Float64() * 80, rand.Float64() * 80}})
+		points.Append(&geojson.Feature{ID: i, Geometry: orb.Point{rand.Float64() * 160, rand.Float64() * 80}})
 	}
 }
 
@@ -46,7 +54,6 @@ func Example(token string) string {
 	return mbgojs.NewGroup(
 		mbgojs.NewMap(mbgojs.Map{Container: "map", AccessToken: token}),
 		mbgojs.NewMapOnLoad(
-			mbgojs.NewMapSetBasemapConfig(mbgojs.BasemapConfig{LightPreset: "dawn"}),
 			mbgojs.NewMapAddImage("heart", img),
 			mbgojs.NewMapAddLayer(mbgojs.MapLayer{
 				Id: `points`, Type: "symbol",

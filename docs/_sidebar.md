@@ -8,5 +8,5 @@
     * [Points/symbols](/example6.md)
     * [Fill/polygon](/example6.1.md)
 * [Examples HTMX Interactive Serverside Rendering](/ssr_general.md)
-    * [Serverside line filter](/example7.md)
-    * [Serverside Popups](/example8.md)
+    * [Line distance filter](/example7.md)
+    * [Popups + flyTo + lightPreset](/example8.md)

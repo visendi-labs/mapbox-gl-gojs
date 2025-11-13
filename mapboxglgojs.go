@@ -108,7 +108,7 @@ func NewMapOnEventLayerPairFeatureState(event1, event2, layer, source, feature, 
 	}
 }
 
-func NewMapJumpTo(co CameraOptions, fo FlyToOptions) EnclosedSnippetCollectionRenderable {
+func NewMapFlyTo(co CameraOptions, fo FlyToOptions) EnclosedSnippetCollectionRenderable {
 	cJson, err := json.Marshal(co)
 	if err != nil {
 		panic(err)
