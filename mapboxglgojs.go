@@ -108,6 +108,21 @@ func NewMapOnEventLayerPairFeatureState(event1, event2, layer, source, feature, 
 	}
 }
 
+func NewMapJumpTo(co CameraOptions, fo FlyToOptions) EnclosedSnippetCollectionRenderable {
+	cJson, err := json.Marshal(co)
+	if err != nil {
+		panic(err)
+	}
+	fJson, err := json.Marshal(fo)
+	if err != nil {
+		panic(err)
+	}
+	return NewEnclosedSnippetCollection(`map.flyTo({...{{.Data.co}}, ...{{.Data.fo}}});`, map[string]string{
+		"co": string(cJson),
+		"fo": string(fJson),
+	})
+}
+
 // map.on("event", layer, (e) => { ... });
 func NewMapOnEventLayer(event, layer string, c ...EnclosedSnippetCollectionRenderable) EnclosedSnippetCollectionRenderable {
 	return NewEnclosedSnippetCollection(`map.on("{{.Data.event}}", "{{.Data.layer}}", (e) => { {{- .Children -}} });`, map[string]string{

@@ -189,3 +189,27 @@ type PopupConfig struct {
 	MaxWidth       float64 `json:"maxWidth,omitempty"`
 	Offset         any     `json:"offset,omitempty"`
 }
+
+type PaddingOptions struct {
+	Bottom float64 `json:"bottom,omitempty"`
+	Left   float64 `json:"left,omitempty"`
+	Right  float64 `json:"right,omitempty"`
+	Top    float64 `json:"top,omitempty"`
+}
+
+type CameraOptions struct {
+	Around         orb.Point      `json:"around,omitempty"`
+	Bearing        float64        `json:"bearing,omitempty"`
+	Center         orb.Point      `json:"center,omitempty"`
+	Pitch          float64        `json:"pitch,omitempty"`
+	PaddingOptions PaddingOptions `json:"paddingOptions,omitempty"`
+	RetainPadding  bool           `json:"retainPadding,omitempty"`
+	Zoom           float64        `json:"zoom,omitempty"`
+}
+type FlyToOptions struct {
+	Curve       float64 `json:"curve,omitempty"`
+	MaxDuration float64 `json:"maxDuration,omitempty"`
+	MinZoom     float64 `json:"minZoom,omitempty"`
+	ScreenSpeed float64 `json:"screenSpeed,omitempty"`
+	Speed       float64 `json:"speed,omitempty"`
+}

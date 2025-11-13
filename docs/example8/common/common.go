@@ -24,12 +24,14 @@ var points = geojson.NewFeatureCollection()
 
 func Popup(index string) string {
 	i, _ := strconv.Atoi(index)
+	p := points.Features[i].Point()
 	return mbgojs.NewScript(
 		mbgojs.NewPopup(
-			geojson.Point(points.Features[i].Point()),
-			mbgojs.PopupConfig{CloseOnClick: true, CloseOnMove: true},
+			geojson.Point(p),
+			mbgojs.PopupConfig{CloseOnClick: true},
 			fmt.Sprintf("<b>Serverside Popup</b><p>Id: %d</p>", i),
 		),
+		mbgojs.NewMapJumpTo(mbgojs.CameraOptions{Center: p}, mbgojs.FlyToOptions{}),
 	).MustRenderDefault()
 }
 

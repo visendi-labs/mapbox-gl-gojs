@@ -1,5 +1,5 @@
 # Serverside line filter 
-[Full code](https://github.com/visendi-labs/mapbox-gl-gojs/tree/main/docs/example7/golang) (run with `go run main.go`  )
+[Full code](https://github.com/visendi-labs/mapbox-gl-gojs/tree/main/docs/example7) (run with `go run main.go` from the `golang` folder)
 
 [](example7/wasm/index.html ':include :type=iframe width=100% height=500px')
 
