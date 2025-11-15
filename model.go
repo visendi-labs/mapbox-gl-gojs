@@ -213,3 +213,26 @@ type FlyToOptions struct {
 	ScreenSpeed float64 `json:"screenSpeed,omitempty"`
 	Speed       float64 `json:"speed,omitempty"`
 }
+
+type MapboxDrawConfigControls struct {
+	Point             bool `json:"point,omitempty"`
+	LineString        bool `json:"line_string,omitempty"`
+	Polygon           bool `json:"polygon,omitempty"`
+	Trash             bool `json:"trash,omitempty"`
+	CombineFeatures   bool `json:"combine_features,omitempty"`
+	UncombineFeatures bool `json:"uncombine_features,omitempty"`
+}
+type MapboxDrawConfig struct {
+	Keybindings            bool                     `json:"keybindings,omitempty"`
+	TouchEnabled           bool                     `json:"touchEnabled,omitempty"`
+	BoxSelect              bool                     `json:"boxSelect,omitempty"`
+	ClickBuffer            uint                     `json:"clickBuffer,omitempty"`
+	TouchBuffer            uint                     `json:"touchBuffer,omitempty"`
+	Controls               MapboxDrawConfigControls `json:"controls,omitempty"`
+	DisplayControlsDefault bool                     `json:"displayControlsDefault,omitempty"`
+	Styles                 any                      `json:"styles,omitempty"` // TODO
+	Modes                  any                      `json:"modes,omitempty"`
+	DefaultMode            string                   `json:"defaultMode,omitempty"`
+	UserProperties         bool                     `json:"userProperties,omitempty"`
+	SuppressAPIEvents      bool                     `json:"suppressAPIEvents,omitempty"`
+}

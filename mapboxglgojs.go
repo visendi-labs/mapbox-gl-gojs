@@ -556,3 +556,58 @@ func NewMapAddLayer(ml MapLayer) EnclosedSnippetCollectionRenderable {
 		)(rc)
 	}
 }
+
+func NewMapboxDraw(mapboxDrawConfig MapboxDrawConfig) EnclosedSnippetCollectionRenderable {
+	return func(rc RenderConfig) *EnclosedSnippetCollection {
+		j, err := json.Marshal(mapboxDrawConfig)
+		if err != nil {
+			panic(err)
+		}
+		return NewEnclosedSnippetCollection(
+			`var draw = new MapboxDraw({{.Data.config}});
+			map.addControl(draw);`,
+			map[string]string{"config": string(j)},
+		)(rc)
+	}
+}
+
+func newMapboxDrawAdd(f ...any) EnclosedSnippetCollectionRenderable {
+	return func(rc RenderConfig) *EnclosedSnippetCollection {
+		features := make([]string, len(f))
+		for i, v := range f {
+			j, err := json.Marshal(v)
+			if err != nil {
+				panic(err)
+			}
+			features[i] = string(j)
+		}
+		return NewEnclosedSnippetCollection(
+			`{{range $f := .Data.features}}draw.add({{$f}});{{end}}`,
+			map[string][]string{"features": features},
+		)(rc)
+	}
+}
+
+func NewMapboxDrawAddFeatures(f ...geojson.Feature) EnclosedSnippetCollectionRenderable {
+	a := make([]any, len(f))
+	for i, v := range f {
+		a[i] = v
+	}
+	return newMapboxDrawAdd(a...)
+}
+
+func NewMapboxDrawAddFeatureCollections(f ...geojson.FeatureCollection) EnclosedSnippetCollectionRenderable {
+	a := make([]any, len(f))
+	for i, v := range f {
+		a[i] = v
+	}
+	return newMapboxDrawAdd(a...)
+}
+
+func NewMapboxDrawAddGeometries(f ...geojson.Geometry) EnclosedSnippetCollectionRenderable {
+	a := make([]any, len(f))
+	for i, v := range f {
+		a[i] = v
+	}
+	return newMapboxDrawAdd(a...)
+}

@@ -7,6 +7,7 @@
     * [Popups + Map config](/example5.md)
     * [Points/symbols](/example6.md)
     * [Fill/polygon](/example6.1.md)
+    * [Mapbox-GL-Draw (Extension)](/example_extension_draw.md)
 * [Examples HTMX Interactive Serverside Rendering](/ssr_general.md)
     * [Line distance filter](/example7.md)
     * [Popups + flyTo + lightPreset](/example8.md)
