@@ -20,23 +20,22 @@ var zones []byte
 
 func Example(token string) string {
 	zones, _ := geojson.UnmarshalFeatureCollection(zones)
+	layers := []mb.EnclosedSnippetCollectionRenderable{}
+	for _, z := range zones.Features {
+		id := uuid.NewString()
+		layers = append(layers, mb.NewMapAddLayer(mb.MapLayer{
+			Id:   id,
+			Type: "fill",
+			Paint: mb.MapLayerPaint{
+				FillColor:   fmt.Sprintf("rgb(%d,%d,%d)", rand.IntN(255), rand.IntN(255), rand.IntN(255)),
+				FillOpacity: []any{"case", []any{"boolean", []any{"feature-state", "hover"}, false}, 0.5, 0.8},
+			},
+			Source: mb.MapSource{Type: "geojson", Data: *z, GenerateId: true},
+		}), mb.NewMapOnEventLayerPairFeatureState("mouseover", "mouseout", id, id, "hover", "true", "false"))
+	}
 	return mb.NewGroup(
 		mb.NewMap(mb.Map{Container: "map", AccessToken: token, Pitch: 44, Zoom: 4, Center: orb.Point{17, 61}}),
-		mb.NewMapOnLoad(func() (layers []mb.EnclosedSnippetCollectionRenderable) {
-			for _, z := range zones.Features {
-				id := uuid.NewString()
-				layers = append(layers, mb.NewMapAddLayer(mb.MapLayer{
-					Id:   id,
-					Type: "fill",
-					Paint: mb.MapLayerPaint{
-						FillColor:   fmt.Sprintf("rgb(%d,%d,%d)", rand.IntN(255), rand.IntN(255), rand.IntN(255)),
-						FillOpacity: []any{"case", []any{"boolean", []any{"feature-state", "hover"}, false}, 0.5, 0.8},
-					},
-					Source: mb.MapSource{Type: "geojson", Data: *z, GenerateId: true},
-				}), mb.NewMapOnEventLayerPairFeatureState("mouseover", "mouseout", id, id, "hover", "true", "false"))
-			}
-			return layers
-		}()...),
+		mb.NewMapOnLoad(layers...),
 	).MustRenderDefault()
 }
 
