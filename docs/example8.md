@@ -8,8 +8,6 @@
 
 [filename](/example8/golang/index.html ':include :type=code :fragment=demo')
 
-
-
 `map.go` 
 
 [filename](/example8/common/map.go ':include :type=code :fragment=demo')

@@ -1,6 +1,6 @@
 * [Home](/)
 * [About the docs](/about.md)
-* Examples Basic
+* Examples
     * [Lines](/example2.md)
     * [Hover lines](/example3.md)
     * [Heatmap](/example4.md)
@@ -10,4 +10,4 @@
     * [Mapbox-GL-Draw (Extension)](/example_extension_draw.md)
 * [Examples HTMX Interactive Serverside Rendering](/ssr_general.md)
     * [Line distance filter](/example7.md)
-    * [Popups + flyTo + lightPreset](/example8.md)
+    * [Popups + flyTo](/example8.md)

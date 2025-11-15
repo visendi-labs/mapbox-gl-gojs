@@ -9,7 +9,5 @@ Click around and edit the lines, points and polygons. See https://github.com/map
 
 [filename](/example_extension_draw/golang/index.html ':include :type=code')
 
-
-`map.go` 
-
+`map.go`
 [filename](/example_extension_draw/common/map.go ':include :type=code :fragment=demo')
