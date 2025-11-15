@@ -19,4 +19,8 @@
 [filename](/example6.1/golang/main.go ':include :type=code :fragment=demo')
 
 
+# Comments
+
+`GenerateId: true` is needed here, since the hover effect require IDs (not present in input data geojson).
+
 

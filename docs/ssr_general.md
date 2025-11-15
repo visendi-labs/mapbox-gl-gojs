@@ -2,10 +2,10 @@
 
 Mapbox-GL-GOJS can be used in a SSR web app context. The following sections will dive deeper into this.
 
-Mapbox + SSR don't go very well together. Using Mapbox can force you to handle lots of map logic clientside in JS/TS. This can cause all sorts of headaches.
+Mapbox + SSR don't go that well together. It can force you to have to  handle lots of map/layer/source logic client-side in JS/TS. This can cause all sorts of headaches.
 
 Keeping your map source of truth serverside comes with a ton of benefits. Here are some:
-- With all of your app logic serverside, it's ideal to keep your map logic there too
+- With all of your app logic serverside, it's ideal to keep your (critical?) map logic there too
     - DRY, no duplicate code to handle the same logic both clientside and serverside
     - One language for all logic
     - Server things like saving to session runs smoothly
@@ -14,4 +14,4 @@ Keeping your map source of truth serverside comes with a ton of benefits. Here a
 
 Some cons:
 - Might lead to more data/traffic being sent from server
-    - Look into gzipping responses, and adding cache headers so that the user can cache responses
+    - Look into gzipping responses, and adding cache headers so that the user can cache responses. Have a look at the examples. 

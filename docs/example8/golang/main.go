@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"os"
 
-	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/visendi-labs/mapbox-gl-gojs/docs/example8/common"
 )
@@ -13,7 +12,6 @@ import (
 func main() {
 	common.GeneratePoints()
 	router := gin.Default()
-	router.Use(gzip.Gzip(gzip.BestCompression))
 
 	tmpl := template.Must(template.ParseFiles("index.html"))
 	router.GET("/", func(ctx *gin.Context) {

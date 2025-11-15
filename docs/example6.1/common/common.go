@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
-	mapboxglgojs "github.com/visendi-labs/mapbox-gl-gojs"
+	mb "github.com/visendi-labs/mapbox-gl-gojs"
 )
 
 // / ### [demo]
@@ -20,18 +20,21 @@ var zones []byte
 
 func Example(token string) string {
 	zones, _ := geojson.UnmarshalFeatureCollection(zones)
-	return mapboxglgojs.NewGroup(
-		mapboxglgojs.NewMap(mapboxglgojs.Map{Container: "map", AccessToken: token, Pitch: 44, Zoom: 4, Center: orb.Point{17, 61}}),
-		mapboxglgojs.NewMapOnLoad(func() (layers []mapboxglgojs.EnclosedSnippetCollectionRenderable) {
+	return mb.NewGroup(
+		mb.NewMap(mb.Map{Container: "map", AccessToken: token, Pitch: 44, Zoom: 4, Center: orb.Point{17, 61}}),
+		mb.NewMapOnLoad(func() (layers []mb.EnclosedSnippetCollectionRenderable) {
 			for _, z := range zones.Features {
-				layers = append(layers, mapboxglgojs.NewMapAddLayer(mapboxglgojs.MapLayer{
-					Id: uuid.NewString(), Type: "fill",
-					Paint: mapboxglgojs.MapLayerPaint{
+				id := uuid.NewString()
+				layers = append(layers, mb.NewMapAddLayer(mb.MapLayer{
+					Id:   id,
+					Type: "fill",
+					Paint: mb.MapLayerPaint{
 						FillColor:   fmt.Sprintf("rgb(%d,%d,%d)", rand.IntN(255), rand.IntN(255), rand.IntN(255)),
-						FillOpacity: 0.6,
+						FillOpacity: []any{"case", []any{"boolean", []any{"feature-state", "hover"}, false}, 0.5, 0.8},
 					},
-					Source: mapboxglgojs.MapSource{Type: "geojson", Data: *z},
-				}))
+					Source: mb.MapSource{Type: "geojson", Data: *z, GenerateId: true},
+				}), mb.NewMapOnEventLayerPairFeatureState("mouseover", "mouseout", id, id, "hover", "true", "false"),
+				)
 			}
 			return layers
 		}()...),

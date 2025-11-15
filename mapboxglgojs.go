@@ -87,7 +87,7 @@ func NewMapOnEventLayerPairFeatureState(event1, event2, layer, source, feature, 
 	return func(rc RenderConfig) *EnclosedSnippetCollection {
 		return NewEnclosedSnippetCollection(
 			`let {{.Data.variable}} = null; {{.Children}}`,
-			map[string]string{"event1": event1, "event2": event2, "layer": layer, "variable": variable},
+			map[string]string{"variable": variable},
 			NewMapOnEventLayer(event1, layer,
 				NewMapSetFeatureState(source, "", "e.features[0].id", map[string]string{
 					feature: event1Value,
@@ -134,7 +134,7 @@ func NewMapOnEventLayer(event, layer string, c ...EnclosedSnippetCollectionRende
 func NewMapOnEventLayerCursor(event, layer, cursor string) EnclosedSnippetCollectionRenderable {
 	return NewMapOnEventLayer(event, layer, EnclosedSnippetCollectionRenderable(func(rc RenderConfig) *EnclosedSnippetCollection {
 		return &EnclosedSnippetCollection{
-			Template: `map.getCanvas().style.cursor = "{{.Data.data}}"`,
+			Template: `map.getCanvas().style.cursor = "{{.Data.data}}";`,
 			Data:     map[string]string{"data": cursor},
 		}
 	}))
@@ -464,7 +464,7 @@ func NewHtmxAjax(htmxAjax HtmxAjax) EnclosedSnippetCollectionRenderable {
 func NewHtmxAjaxRaw(verb, path, data string) EnclosedSnippetCollectionRenderable {
 	return func(rc RenderConfig) *EnclosedSnippetCollection {
 		return NewEnclosedSnippetCollection(
-			`htmx.ajax("{{.Data.verb}}", "{{.Data.path}}")`, map[string]string{},
+			`htmx.ajax("{{.Data.verb}}", "{{.Data.path}}");`, map[string]string{},
 		)(rc)
 	}
 }
