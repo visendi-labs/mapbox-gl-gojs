@@ -10,11 +10,11 @@
 
 
 
-`main.go` 
+`map.go` 
 
-[filename](/example8/common/common.go ':include :type=code :fragment=demo')
+[filename](/example8/common/map.go ':include :type=code :fragment=demo')
 
-
+`main.go`
 [filename](/example8/golang/main.go ':include :type=code :fragment=demo')
 
 # Comments 

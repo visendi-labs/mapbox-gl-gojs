@@ -33,8 +33,7 @@ func Example(token string) string {
 						FillOpacity: []any{"case", []any{"boolean", []any{"feature-state", "hover"}, false}, 0.5, 0.8},
 					},
 					Source: mb.MapSource{Type: "geojson", Data: *z, GenerateId: true},
-				}), mb.NewMapOnEventLayerPairFeatureState("mouseover", "mouseout", id, id, "hover", "true", "false"),
-				)
+				}), mb.NewMapOnEventLayerPairFeatureState("mouseover", "mouseout", id, id, "hover", "true", "false"))
 			}
 			return layers
 		}()...),

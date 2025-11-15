@@ -15,7 +15,7 @@ Mapbox-GL-GOJS has built in support to add circle and square images as symbol la
 
 `main.go` 
 
-[filename](/example6/common/common.go ':include :type=code :fragment=demo')
+[filename](/example6/common/map.go ':include :type=code :fragment=demo')
 
 `main.go`
 [filename](/example6/golang/main.go ':include :type=code')
