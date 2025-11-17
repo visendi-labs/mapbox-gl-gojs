@@ -7,7 +7,8 @@ Click around and edit the lines, points and polygons. See https://github.com/map
 
 `index.html` Parsed by Go's [html/template](https://pkg.go.dev/html/template) or another templating tool
 
-[filename](/example_extension_draw/golang/index.html ':include :type=code')
+[filename](/example_extension_draw/golang/index.html ':include :type=code :fragment=demo')
 
 `map.go`
-[filename](/example_extension_draw/common/map.go ':include :type=code :fragment=demo')
+
+[](/example_extension_draw/common/map.go ':include :type=code :fragment=demo')
