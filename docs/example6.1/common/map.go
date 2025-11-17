@@ -19,9 +19,9 @@ import (
 var zones []byte
 
 func Example(token string) string {
-	zones, _ := geojson.UnmarshalFeatureCollection(zones)
+	lands, _ := geojson.UnmarshalFeatureCollection(zones)
 	layers := []mb.EnclosedSnippetCollectionRenderable{}
-	for _, z := range zones.Features {
+	for _, z := range lands.Features {
 		id := uuid.NewString()
 		layers = append(layers, mb.NewMapAddLayer(mb.MapLayer{
 			Id:   id,

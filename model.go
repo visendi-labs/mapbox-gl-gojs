@@ -51,6 +51,7 @@ type MapLayerPaint struct {
 	RasterSaturation    any `json:"raster-saturation,omitempty"`
 	RasterContrast      any `json:"raster-contrast,omitempty"`
 	RasterFadeDuration  any `json:"raster-fade-duration,omitempty"`
+	RasterColorMix      any `json:"raster-color-mix,omitempty"`
 
 	// Hillshade layers
 	HillshadeIlluminationDirection any    `json:"hillshade-illumination-direction,omitempty"`
@@ -110,6 +111,9 @@ type MapLayout struct {
 	TextAllowOverlap    bool   `json:"text-allow-overlap,omitempty"`
 	TextIgnorePlacement bool   `json:"text-ignore-placement,omitempty"`
 	TextOptional        bool   `json:"text-optional,omitempty"`
+
+	// Raster
+	RasterColorRange []float64 `json:"raster-color-range,omitempty"`
 
 	// Visibility
 	Visibility string `json:"visibility,omitempty"` // visible, none

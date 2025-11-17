@@ -14,6 +14,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 )
 
@@ -323,17 +324,27 @@ func (esc EnclosedSnippetCollectionRenderable) Render(config RenderConfig) (html
 }
 
 type MapLayer struct {
-	Id     string        `json:"id,omitempty"`
-	Type   string        `json:"type,omitempty"`
-	Source any           `json:"source,omitempty"`
-	Layout MapLayout     `json:"layout,omitempty"`
-	Paint  MapLayerPaint `json:"paint,omitempty"`
+	Id            string         `json:"id,omitempty"`
+	Type          string         `json:"type,omitempty"`
+	Source        any            `json:"source,omitempty"`
+	SourceLayer   string         `json:"sourceLayer,omitempty"`
+	Layout        MapLayout      `json:"layout,omitempty"` // TODO varies with type (any here?)
+	Slot          string         `json:"slot,omitempty"`
+	BeforeId      string         `json:"beforeId,omitempty"`
+	Paint         MapLayerPaint  `json:"paint,omitempty"`
+	MinZoom       float64        `json:"minzoom,omitempty"`
+	MaxZoom       float64        `json:"maxzoom,omitempty"`
+	Metadata      map[string]any `json:"metadata,omitempty"`
+	Filter        any            `json:"filter,omitempty"`
+	RenderingMode string         `json:"renderingMode,omitempty"`
 }
 
 type MapSource struct {
-	Type       string `json:"type,omitempty"`
-	Data       any    `json:"data,omitempty"`
-	GenerateId bool   `json:"generateId,omitempty"`
+	Type        string      `json:"type,omitempty"`
+	Data        any         `json:"data,omitempty"`
+	Coordinates []orb.Point `json:"coordinates,omitempty"`
+	GenerateId  bool        `json:"generateId,omitempty"`
+	Url         string      `json:"url,omitempty"`
 }
 
 func NewMapAddSourceFeatureCollection(id string, fc geojson.FeatureCollection) EnclosedSnippetCollectionRenderable {
@@ -368,6 +379,22 @@ func NewMapSourceSetData(id string, d any) EnclosedSnippetCollectionRenderable {
 		`map.getSource("{{.Data.id}}").setData({{.Data.data}});`,
 		map[string]string{"id": id, "data": string(data)},
 	)
+}
+
+func NewMapSourceUpdateImageUrl(id string, url string) EnclosedSnippetCollectionRenderable {
+	return NewEnclosedSnippetCollection(
+		`map.getSource("{{.Data.id}}").updateImage({"url":"{{.Data.data}}"});`,
+		map[string]string{"id": id, "data": url},
+	)
+}
+
+func NewMapRemoveSource(sourceId string) EnclosedSnippetCollectionRenderable {
+	return func(rc RenderConfig) *EnclosedSnippetCollection {
+		return NewEnclosedSnippetCollection(
+			`map.removeSource("{{.Data.data}}");`,
+			map[string]string{"data": sourceId},
+		)(rc)
+	}
 }
 
 func NewMapRemoveLayer(layerId string) EnclosedSnippetCollectionRenderable {

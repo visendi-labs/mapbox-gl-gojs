@@ -1,12 +1,9 @@
 package common
 
 import (
-	"fmt"
-	"html"
 	"math/rand/v2"
 	"strconv"
 
-	"github.com/google/uuid"
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geo"
 	"github.com/paulmach/orb/geojson"
@@ -42,20 +39,7 @@ func Filter(distance string) string {
 			filteredLines.Append(l)
 		}
 	}
-	script := mapboxglgojs.NewScript(mapboxglgojs.NewMapSourceSetData("mySrc", filteredLines)).MustRenderDefault()
-
-	randomId := uuid.NewString()
-	respStatus := fmt.Sprintf(`
-		<ul hx-swap-oob="afterbegin:#list-group">
-			<li class="list-group-item">
-				<div class="d-flex justify-content-between">
-					<a data-bs-toggle="collapse" href="#%s" role="button" aria-expanded="false">/filter?distance=%s</a>
-					<button type="button" class="btn btn-sm btn-outline-success" disabled>200 OK</button>
-				</div>				
-				<div style="font-size:0.7rem" id="%s" class="collapse m-2 card font-monospace text-muted card-body">%s</div>
-			</li>
-		</ul>`, randomId, distance, randomId, html.EscapeString(script)) // Response details element
-	return script + respStatus
+	return mapboxglgojs.NewScript(mapboxglgojs.NewMapSourceSetData("mySrc", filteredLines)).MustRenderDefault()
 }
 
 /// [demo]
