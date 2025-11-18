@@ -15,17 +15,15 @@ import (
 //go:embed weather
 var weather embed.FS
 
-var files []fs.DirEntry
+var dir []fs.DirEntry
 
 func ReadFiles() {
-	files, _ = weather.ReadDir("weather")
+	dir, _ = weather.ReadDir("weather")
 }
-
-var filePath = "../common/weather/"
 
 func UpdateUrl(t string) string {
 	tInt, _ := strconv.Atoi(t)
-	return mb.NewScript(mb.NewMapSourceUpdateImageUrl("weather", filePath+files[tInt].Name())).MustRenderDefault()
+	return mb.NewScript(mb.NewMapSourceUpdateImageUrl("weather", "../common/weather/"+dir[tInt].Name())).MustRenderDefault()
 }
 
 func Example(token string) string {
@@ -34,7 +32,7 @@ func Example(token string) string {
 		mb.NewMapOnLoad(
 			mb.NewMapAddLayer(mb.MapLayer{
 				Id: "weather", Type: "raster",
-				Source: mb.MapSource{Type: "image", Url: filePath + files[0].Name(), Coordinates: []orb.Point{
+				Source: mb.MapSource{Type: "image", Url: "../common/weather/" + dir[0].Name(), Coordinates: []orb.Point{
 					{9.3191647, 69.4197068}, {29.7990632, 69.4197068}, {29.7990632, 53.869605}, {9.3191647, 53.869605},
 				}},
 				Paint: mb.MapLayerPaint{RasterFadeDuration: 0, RasterOpacity: 0.7},
