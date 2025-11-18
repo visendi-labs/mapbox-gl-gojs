@@ -11,3 +11,4 @@
 * [Examples HTMX Interactive Serverside Rendering](/ssr_general.md)
     * [Line distance filter](/example7.md)
     * [Popups + flyTo](/example8.md)
+    * [Raster images](/example_htmx_raster.md)

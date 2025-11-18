@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css' rel='stylesheet' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+
+<body style="padding:0; margin:0" hx-ext="fake-backend">
+    <!-- /// [demo] <!-- -->
+    <div id="map" style="width:100vw; height:100vh;"></div>
+    <div class="card z-3 position-absolute top-0 start-0 m-3">
+        <div class="card-body">
+            <label class="form-label">Timeline</label>
+            <!-- HTMX map interactivity happens here! -->
+            <form hx-get="/timeline" hx-trigger="input" hx-swap="beforeend" hx-target="body">
+                <input type="range" class="form-range" name="t" value="0" min="0" max="287">
+            </form>
+        </div>
+    </div>
+    <script src="../../wasm_exec.js"></script>
+    <script src="../../load_main_wasm_example.js"></script>
+    <script>
+        htmx.defineExtension('fake-backend', {
+            onEvent: function (name, evt) {
+                if (name === "htmx:beforeRequest") {
+                    let id = evt.detail.requestConfig.parameters.get("t")
+                    Object.defineProperty(evt.detail.xhr, "status", { value: 200, writable: false });
+                    evt.detail.keepIndicators = true; // prevent indicator cleanup when indicators will not be generated
+                    let resp = timeline(id)
+                    evt.detail.serverResponse = resp
+                    evt.detail.xhr.onload();
+                    return false;
+                }
+            },
+        })
+    </script>
+</body>
+
+</html>
