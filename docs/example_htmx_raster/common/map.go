@@ -21,7 +21,7 @@ func ReadFiles() {
 	files, _ = weather.ReadDir("weather")
 }
 
-var filePath = "/example_htmx_raster/common/weather/"
+var filePath = "../common/weather/"
 
 func UpdateUrl(t string) string {
 	tInt, _ := strconv.Atoi(t)
