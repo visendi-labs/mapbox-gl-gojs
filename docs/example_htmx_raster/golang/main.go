@@ -12,7 +12,7 @@ import (
 func main() {
 	router := gin.Default()
 	common.ReadFiles()
-	router.Static("/example_htmx_raster/common/weather/", "../common/weather") // Has to be this path for docs live variant to work..
+	router.Static("../common/weather/", "../common/weather") // Has to be this path for docs live variant to work..
 	tmpl := template.Must(template.ParseFiles("index.html"))
 	router.GET("/", func(ctx *gin.Context) {
 		tmpl.Execute(ctx.Writer, template.JS(common.Example(os.Getenv("MAPBOX_ACCESS_TOKEN"))))
