@@ -1,5 +1,4 @@
 * [Home](/)
-* [About the docs](/about.md)
 * Examples
     * [Lines](/example2.md)
     * [Hover lines](/example3.md)
@@ -7,8 +6,10 @@
     * [Popups + Map config](/example5.md)
     * [Points/symbols](/example6.md)
     * [Fill/polygon](/example6.1.md)
-    * [Mapbox-GL-Draw (Extension)](/example_extension_draw.md)
+    * [Mapbox-GL-Draw](/example_extension_draw.md)
 * [Examples HTMX Interactive Serverside Rendering](/ssr_general.md)
     * [Line distance filter](/example7.md)
     * [Popups + flyTo](/example8.md)
     * [Raster images](/example_htmx_raster.md)
+    * [Add geo content to map (Mapbox-GL-Draw)](/example_ssr_extension_draw.md)
+* [About the docs](/about.md)

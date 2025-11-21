@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.3/mapbox-gl-draw.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.3/mapbox-gl-draw.css'
+        type='text/css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+<body style="padding:0; margin:0" hx-ext="fake-backend">
+    <div id="map" class="position-absolute" style="width:100vw; height:100vh;"></div>
+
+    <div class="card position-absolute m-2" style="width:350px">
+        <h5 class="card-header d-flex justify-content-between">
+            <span>Features </span>
+            <span>(Add new<i class="bi bi-arrow-right"></i>)</span>
+        </h5>
+        <ol id="features" class="list-group list-group-numbered" style="max-height:400px; overflow: auto">
+        </ol>
+    </div>
+    <script src="../../wasm_exec.js"></script>
+    <script>
+        const go = new Go(); // defined in wasm_exec.js
+
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject)
+            .then((result) => {
+                go.run(result.instance);
+                let html = example().split("<\/script>")
+                let el = document.getElementById("features")
+                let s = document.createElement("script")
+                s.textContent += html[0].replace("<script>", "")
+                document.body.appendChild(s)
+                el.innerHTML += html[1]
+            });
+    </script>
+    <script>
+        htmx.defineExtension('fake-backend', {
+            onEvent: function (name, evt) {
+                if (name === "htmx:beforeRequest") {
+                    let f = evt.detail.requestConfig.parameters.get("features")
+                    Object.defineProperty(evt.detail.xhr, "status", { value: 200, writable: false });
+                    evt.detail.keepIndicators = true; // prevent indicator cleanup when indicators will not be generated
+                    let resp = addFeatures(f)
+                    evt.detail.serverResponse = resp
+                    evt.detail.xhr.onload();
+                    return false;
+                }
+            },
+        })
+    </script>
+</body>
+
+</html>
