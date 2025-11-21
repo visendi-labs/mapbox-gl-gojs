@@ -1,8 +1,6 @@
 # Serverside Rendering + Mapbox + Golang
 
-> You shouldn't have two sources of truth - the map at the client and your server
-
-Mapbox-GL-GOJS can be used in a SSR web app context. The following examples will dive deeper into this.
+> Mapbox-GL-GOJS can be used in a SSR web app context. The following examples will dive deeper into this. High power tools for Maps!
 
 Mapbox + SSR don't go that well together. It can force you to have to handle lots of map/layer/source logic client-side in JS/TS. This can cause all sorts of headaches.
 
@@ -13,7 +11,8 @@ Keeping your map source of truth serverside comes with a ton of benefits. Here a
     - Everyday server things like saving to session easily integrated with map operations
     - Server can cache or do other smart things when fetching data to show
 - No tricky SSR templating, injecting some serverside data into some function call in a JS/HTML template. 
-- Tieing map interaction to general UI changes, can become real strange and breaks SSR/HATEOAS. What if you want to show a page with the number of lines on the map? Who keeps t
+- Wiring map interaction to general UI changes, can become real strange and kinda breaks SSR/HATEOAS. Should you on a map click from JS add some UI panel with content? Where should that content come from?
+- Adjusting map content, should JS only do that? How should the server be kept up to speed with what's going on?
 
 Some cons:
 - Might lead to more data/traffic being sent from server

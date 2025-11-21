@@ -4,6 +4,8 @@ Interactive map and geo visualization for Golang. Generate [Mapbox](https://gith
 
 https://github.com/visendi-labs/mapbox-gl-gojs
 
+# INSTALL
+ `go get https://github.com/visendi-labs/mapbox-gl-gojs`
 
 ## NB
 - You'll need a Mapbox API key to display the map when running locally: https://docs.mapbox.com/mapbox-gl-js/guides/.
