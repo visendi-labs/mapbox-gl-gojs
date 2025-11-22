@@ -18,7 +18,7 @@
 # Comments 
 
 
-The resulting JS from the call to `mbgojs.NewMapOnEventLayer("click", "points", mbgojs.NewHtmxAjax(...` will result in the following (key here is the `mbgojs.HtmxAjaxContextEventValuesFull`, making sure attributes of `e` are added to the `htmx.ajax` values):
+The resulting JS from the call to `mbgojs.NewMapOnEventLayer("click", "points", mbgojs.NewHtmxAjax(...` will result in the following (key here is the `mbgojs.HtmxAjaxContextEventValuesFull`, making sure attributes of map click event `e` are added to the `htmx.ajax` values):
 ```javascript
 map.on("click", "points", (e) => {
     htmx.ajax("GET", "/popup", {
