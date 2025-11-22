@@ -25,13 +25,14 @@ func AddFeatures(f string) (html string) {
 		case geojson.TypeLineString:
 			comment = fmt.Sprintf("%0.1fm", geo.LengthHaversine(f.Geometry))
 		case geojson.TypePolygon:
-			comment = fmt.Sprintf("%0.1f m<sup>2</sup>", geo.Area(f.Geometry))
+			comment = fmt.Sprintf("%0.1f m<sup>2</sup> / %0.1fm", geo.Area(f.Geometry), geo.LengthHaversine(f.Geometry))
 		case geojson.TypePoint:
 			comment = fmt.Sprintf("(%0.5f,%0.5f)", f.Point()[0], f.Point()[1])
 		}
 		html += fmt.Sprintf(`<li class="list-group-item d-flex justify-content-between align-items-start">
-			<div class="fw-bold">%s</div><span class="badge text-bg-primary rounded-pill">%s</span>
-		</li>`, f.Geometry.GeoJSONType(), comment)
+			<div class="fw-bold">%s<button type="button" onclick="%s" class="btn btn-sm ms-2 btn-light"><i class="bi bi-zoom-in"></i></button></div>
+			<span class="badge text-bg-primary rounded-pill">%s</span>
+		</li>`, f.Geometry.GeoJSONType(), mb.NewMapFitBounds(f.Geometry.Bound().Min, f.Geometry.Bound().Max, mb.FitBoundsOptions{}).MustRenderDefault(), comment)
 	}
 	return html
 }
