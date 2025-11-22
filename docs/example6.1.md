@@ -17,7 +17,7 @@
 
 # Comments
 
-- `GenerateId: true` is needed here in `map.go`, since the hover effect require IDs (not present in input data geojson).
+- `GenerateId: true` is needed here in `map.go`, since the hover effect require feature IDs (not present in input data geojson).
 - `mb.NewMapOnEventLayerPairFeatureState("mouseover", "mouseout", id, id, "hover"...` the double `id` here is because the source gets the same id as the layer when added inline.
 
 
