@@ -16,10 +16,10 @@ import (
 // https://github.com/perliedman/svenska-landskap (changed to all being MyltiPolygons)
 //
 //go:embed landskap.geojson
-var zones []byte
+var landskap []byte
 
 func Example(token string) string {
-	lands, _ := geojson.UnmarshalFeatureCollection(zones)
+	lands, _ := geojson.UnmarshalFeatureCollection(landskap)
 	layers := []mb.EnclosedSnippetCollectionRenderable{}
 	for _, l := range lands.Features {
 		id := uuid.NewString()
