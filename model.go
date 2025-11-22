@@ -218,6 +218,14 @@ type FlyToOptions struct {
 	Speed       float64 `json:"speed,omitempty"`
 }
 
+type FitBoundsOptions struct { // TODO: incomplete
+	Bearing float64 `json:"bearing,omitempty"`
+	Linear  bool    `json:"linear,omitempty"`
+	MaxZoom float64 `json:"maxZoom,omitempty"`
+	Padding float64 `json:"padding,omitempty"`
+	Pitch   float64 `json:"pitch,omitempty"`
+}
+
 type MapboxDrawConfigControls struct {
 	Point             bool `json:"point,omitempty"`
 	LineString        bool `json:"line_string,omitempty"`

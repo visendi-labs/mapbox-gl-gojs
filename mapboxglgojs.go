@@ -109,6 +109,22 @@ func NewMapOnEventLayerPairFeatureState(event1, event2, layer, source, feature, 
 	}
 }
 
+func NewMapFitBounds(sw, ne orb.Point, options FitBoundsOptions) EnclosedSnippetCollectionRenderable {
+	oJson, err := json.Marshal(options)
+	if err != nil {
+		panic(err)
+	}
+	return NewEnclosedSnippetCollection(`map.fitBounds([
+		[{{index .Data.sw 0}}, {{index .Data.sw 1}}],
+		[{{index .Data.ne 0}}, {{index .Data.ne 1}}]], {{.Data.options}});`,
+		map[string]any{
+			"sw":      sw,
+			"ne":      ne,
+			"options": string(oJson),
+		},
+	)
+}
+
 func NewMapFlyTo(co CameraOptions, fo FlyToOptions) EnclosedSnippetCollectionRenderable {
 	cJson, err := json.Marshal(co)
 	if err != nil {
