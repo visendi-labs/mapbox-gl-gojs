@@ -23,19 +23,14 @@ func AddFeatures(f string) (html string) {
 		comment := ""
 		switch f.Geometry.GeoJSONType() {
 		case geojson.TypeLineString:
-			l := f.Geometry.(orb.LineString)
-			d := 0.0
-			for i := 0; i < len(l)-1; i++ {
-				d += geo.DistanceHaversine(l[i], l[i+1])
-			}
-			comment = fmt.Sprintf("%0.1fm", d)
+			comment = fmt.Sprintf("%0.1fm", geo.LengthHaversine(f.Geometry))
 		case geojson.TypePolygon:
 			comment = fmt.Sprintf("%0.1f m<sup>2</sup>", geo.Area(f.Geometry))
 		case geojson.TypePoint:
 			comment = fmt.Sprintf("(%0.5f,%0.5f)", f.Point()[0], f.Point()[1])
 		}
 		html += fmt.Sprintf(`<li class="list-group-item d-flex justify-content-between align-items-start">
-			<div class="ms-2 me-auto fw-bold">%s</div><span class="badge text-bg-primary rounded-pill">%s</span>
+			<div class="fw-bold">%s</div><span class="badge text-bg-primary rounded-pill">%s</span>
 		</li>`, f.Geometry.GeoJSONType(), comment)
 	}
 	return html
