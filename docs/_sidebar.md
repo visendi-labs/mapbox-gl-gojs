@@ -1,4 +1,5 @@
 * [Home](/)
+* [Docs](/docs.md)
 * Examples
     * [Lines](/example2.md)
     * [Hover lines](/example3.md)

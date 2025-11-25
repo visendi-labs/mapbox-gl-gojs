@@ -6,7 +6,7 @@
 
 `index.html` Parsed by Go's [html/template](https://pkg.go.dev/html/template) or another templating tool
 
-[filename](/example8/golang/index.html ':include :type=code :fragment=demo')
+[filename](/example8/golang/index.html ':include :type=code')
 
 `map.go` 
 
