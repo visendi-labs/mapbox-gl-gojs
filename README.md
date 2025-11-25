@@ -1,92 +1,32 @@
 # Mapbox GL GOJS
 Interactive map and geo visualization for Golang. Generate [Mapbox](https://github.com/mapbox/mapbox-gl-js) HTML.
 
-## Docs https://visendi-labs.github.io/mapbox-gl-gojs/#/
+## Docs + Examples https://visendi-labs.github.io/mapbox-gl-gojs/#/
 
-#### Minimal Example
+#### Usage - Generate Mapbox HTML/JS from Go 
 
 ```go
-package main
-
-import (
-	"html/template"
-	"math/rand/v2"
-
-	"github.com/gin-gonic/gin"
-	"github.com/paulmach/orb"
-
-	"github.com/paulmach/orb/geojson"
-	mbgojs "github.com/visendi-labs/mapbox-gl-gojs"
+mapbox := mbgojs.NewScript(
+	mbgojs.NewMap(mbgojs.Map{
+		Container:   "map",
+		AccessToken: "<MAPBOX_ACCESS_TOKEN>",
+		Config:      mbgojs.MapConfig{Basemap: mbgojs.BasemapConfig{Theme: "faded"}},
+	}),
 )
 
-func main() {
-	lines := geojson.NewFeatureCollection()
-	line := make(orb.LineString, 500)
-	for i := 0; i < len(line); i++ {
-		line[i] = orb.Point{-50 + rand.Float64()*100, -50 + rand.Float64()*100}
-	}
-	lines.Append(geojson.NewFeature(line))
-
-	mapbox := mbgojs.NewScript(
-		mbgojs.NewMap(mbgojs.Map{
-			Container:   "map",
-			AccessToken: "<MAPBOX_ACCESS_TOKEN>",
-			Hash:        true,
-			Config:      mbgojs.MapConfig{Basemap: mbgojs.BasemapConfig{Theme: "faded"}},
-		}),
-		mbgojs.NewMapOnLoad(
-			mbgojs.NewMapAddLayer(mbgojs.MapLayer{
-				Id: "layer", Type: "line",
-				Source: mbgojs.MapSource{Type: "geojson", Data: *lines},
-			}),
-		),
-		mbgojs.NewMapOnEventLayerCursor("mouseover", "layer", "pointer"),
-		mbgojs.NewMapOnEventLayerCursor("mouseout", "layer", ""),
-	)
-
-	s := mapbox.MustRender(mbgojs.RenderConfig{})
-
-	html := `<html><head>
-	<script src='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js'></script>
-	<link href='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css' rel='stylesheet' />
-	</head><body style="margin:0"><div id="map" style="width:100vw; height:100vh;"></div>
-	{{.}}</body></html>`
-	r := gin.Default()
-	r.GET("/", func(ctx *gin.Context) {
-		t, _ := template.New("page").Parse(html)
-		if err := t.Execute(ctx.Writer, template.HTML(s)); err != nil {
-			panic(err)
-		}
-	})
-	r.Run()
-}
+mapbox.MustRenderDefault() // <script>const map = new mapboxgl.Map({container: "map", ...});</script>
 ```
 
-![asd](image.png)
+```go
+points := geojson.NewFeatureCollection()
+points.Append(geojson.NewFeature(orb.Point{rand.Float64() * 50, rand.Float64() * 50}))
 
+event := mbgojs.NewMapOnLoad(
+	mbgojs.NewMapAddLayer(mbgojs.MapLayer{
+		Id: "layer", Type: "line",
+		Source: mbgojs.MapSource{Type: "geojson", Data: *points},
+	}),
+)
 
-### TODO
-- Fix Mapbox Popup logic
-- Improve type safety
-- Fix render config
-- Acutal template files/file? Multiple defines in one file? #embed
-- Add support for the mapbox draw extension tool?
-- Use common template/index.html in examples
-- Fix mapbox config (& more) defaults
-- Option to add layers wihout specifying id (random)?
-- Run some tesing on different render/output configs. E.g. how different float roundings affect SSR response sizes.
-- Talk more about generating/loading images in docs
-- Talk about gzip in docs. Also related to the render output config point above
-    - Maybe some apache echart/chartjs charts on the output sizes on different render- and zip configs. Also CPU time for applying settings/zip
-	- Maybe link to that Wiki page on coordinate degree decimals? https://en.wikipedia.org/wiki/Decimal_degrees#Precision
-	- The config settings of being able to set rounding of coords is also tied to the type safety point. Type safety probably has to come first? So that funcs can go in and find floats to round etc.
-- Add something about 10x-ing your map / geo DX.
-- Talk about serverside cache headers (so the fetch requests can be cached by browser/user)
-- Example where color change happens in backend
-- Talk about redis
-- Grouping of lines in BE HTMX
-- Write text/explanations in all examples docs page
-- Map change style/config. I.e. loading layers and things
-- Rename this `mapboxglgojs.EnclosedSnippetCollectionRenderable`
-- Rename all examples from `exampleX` to some more descriptive name
-- Fix code fragment embeds not working?? 
+event.MustRenderDefault() // map.on("load", (e) => {map.addLayer({ ... })});
+```
