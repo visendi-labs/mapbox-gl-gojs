@@ -23,9 +23,7 @@ func Example(token string) string {
 		mapboxglgojs.NewMapOnLoad(
 			mapboxglgojs.NewMapAddSource("mySource", mapboxglgojs.MapSource{Type: "geojson", Data: fc, GenerateId: true}),
 			mapboxglgojs.NewMapAddLayer(mapboxglgojs.MapLayer{
-				Id:     "myLayer",
-				Type:   "heatmap",
-				Source: "mySource",
+				Id: "myLayer", Type: "heatmap", Source: "mySource",
 				Paint: mapboxglgojs.MapLayerPaint{
 					HeatmapWeight: []any{
 						"interpolate",

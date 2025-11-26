@@ -19,23 +19,15 @@ func Example(token string) string {
 		lines.Append(geojson.NewFeature(line))
 	}
 	return mapboxglgojs.NewGroup(
-		mapboxglgojs.NewMap(mapboxglgojs.Map{
-			Container:   "map",
-			AccessToken: token,
-		}),
+		mapboxglgojs.NewMap(mapboxglgojs.Map{Container: "map", AccessToken: token}),
 		mapboxglgojs.NewMapOnLoad(
 			mapboxglgojs.NewMapAddSource("mySource", mapboxglgojs.MapSource{
-				Type:       "geojson",
-				Data:       lines,
-				GenerateId: true,
+				Type: "geojson", Data: lines, GenerateId: true,
 			}),
 			mapboxglgojs.NewMapAddLayer(mapboxglgojs.MapLayer{
-				Id:     "myLayer",
-				Type:   "line",
-				Source: "mySource",
+				Id: "myLayer", Type: "line", Source: "mySource",
 				Paint: mapboxglgojs.MapLayerPaint{
-					LineColor: "#44f",
-					LineWidth: []any{
+					LineColor: "#44f", LineWidth: []any{
 						"case",
 						[]any{"boolean", []any{"feature-state", "hover"}, false},
 						12, 6,
