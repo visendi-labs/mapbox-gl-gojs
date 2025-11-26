@@ -13,7 +13,7 @@ import (
 
 // / ### [demo]
 
-// https://github.com/perliedman/svenska-landskap (changed to all being MyltiPolygons)
+// https://github.com/perliedman/svenska-landskap (but changed to all being MultiPolygons)
 //
 //go:embed landskap.geojson
 var landskap []byte

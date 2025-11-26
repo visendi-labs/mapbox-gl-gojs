@@ -8,7 +8,7 @@
     * [Points/symbols](/example6.md)
     * [Fill/polygon](/example6.1.md)
     * [Mapbox-GL-Draw](/example_extension_draw.md)
-* [Examples HTMX Interactive Serverside Rendering](/ssr_general.md)
+* Examples HTMX Interactive Serverside Rendering
     * [Line distance filter](/example7.md)
     * [Popups + flyTo](/example8.md)
     * [Raster images](/example_htmx_raster.md)

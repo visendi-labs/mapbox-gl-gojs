@@ -1,8 +1,6 @@
 # Mapbox-GL-GOJS
 
-Interactive map and geo visualization for Golang. Generate [Mapbox](https://github.com/mapbox/mapbox-gl-js) HTML.
-
-https://github.com/visendi-labs/mapbox-gl-gojs
+Interactive map and geo visualization for Golang. Generate [Mapbox](https://www.mapbox.com) HTML/JS. https://github.com/visendi-labs/mapbox-gl-gojs
 
 # Install
  `go get https://github.com/visendi-labs/mapbox-gl-gojs`
