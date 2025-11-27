@@ -3,6 +3,8 @@ Interactive map and geo visualization for Golang. Generate [Mapbox](https://gith
 
 ## Docs + Examples https://visendi-labs.github.io/mapbox-gl-gojs/#/
 
+![](img.png)
+
 #### Usage - Generate Mapbox HTML/JS from Go 
 
 ```go
