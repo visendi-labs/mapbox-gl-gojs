@@ -12,5 +12,4 @@
         - The browser won't execute a JS HTML string with content put straight in the DOM (added like `.innerHTML += content`). However, it will execute JS code if put into a `document.createElement("script")`. Mapbox-GL-GOJS supports wrapping everything in `<script>` tags (`mapboxglgojs.NewScript(...)`, use it!) but that didn't really work in some of the docs web examples (without resorting to like `eval` or some string parsing).
 - _"DDD"_, docs driven development
     - The developments of this project has been driven kinda by this docs page and it's examples.
-- Bootstrap has been used for some UI things in examples. Why not. DaisyUI is cool tho, also Basecoat.
 
