@@ -29,10 +29,15 @@ func AddFeatures(f string) (html string) {
 		case geojson.TypePoint:
 			comment = fmt.Sprintf("(%0.5f,%0.5f)", f.Point()[0], f.Point()[1])
 		}
-		html += fmt.Sprintf(`<li class="list-group-item d-flex justify-content-between align-items-start">
-			<div class="fw-bold">%s<button type="button" onclick="%s" class="btn btn-sm ms-2 btn-light"><i class="bi bi-zoom-in"></i></button></div>
-			<span class="badge text-bg-primary rounded-pill">%s</span>
-		</li>`, f.Geometry.GeoJSONType(), mb.NewMapFitBounds(f.Geometry.Bound().Min, f.Geometry.Bound().Max, mb.FitBoundsOptions{}).MustRenderDefault(), comment)
+		html += fmt.Sprintf(`<li class="list-row flex justify-between">
+			<div>
+				<div>%s</div>
+				<div class="font-semibold text-xs opacity-60">%s</div>
+			</div>
+			<button class="btn btn-square btn-ghost" onclick="%s">
+				<svg class="size-[0.8rem]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zoom-in-icon lucide-zoom-in"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/><line x1="11" x2="11" y1="8" y2="14"/><line x1="8" x2="14" y1="11" y2="11"/></svg>
+			</button>
+		</li>`, f.Geometry.GeoJSONType(), comment, mb.NewMapFitBounds(f.Geometry.Bound().Min, f.Geometry.Bound().Max, mb.FitBoundsOptions{}).MustRenderDefault())
 	}
 	return html
 }
