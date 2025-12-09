@@ -1,6 +1,6 @@
 module github.com/visendi-labs/mapbox-gl-gojs
 
-go 1.25.0
+go 1.23.0
 
 require (
 	github.com/gin-contrib/gzip v1.2.3
