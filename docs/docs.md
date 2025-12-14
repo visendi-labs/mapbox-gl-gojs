@@ -18,7 +18,7 @@ For a SSR web app: _keeping your responses hypermedia_. Keeping everything in on
 The Go core templating package `html/template` is being used. See https://pkg.go.dev/html/template. 
 
 ## Go geo
-`orb` and `orb/geojson` are used for geo works in Mapbox-GL-GOJS: https://github.com/paulmach/orb
+`orb`, `orb/geo` and `orb/geojson` are used for geo works in Mapbox-GL-GOJS: https://github.com/paulmach/orb
 
 ## Mapbox-GL-JS supported operations
 Mapbox-GL-GOJS supports several of the key Mapbox-GL-JS operations. See the complete list of supported underlying operations below. Several of the operations below have more than one wrapper/helper, i.e. underlying `map.on` is used in both `func NewMapOnEventLayer(...)` and `func NewMapOnEvent(...)`. More to come. 
