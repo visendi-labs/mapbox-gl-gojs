@@ -7,7 +7,7 @@ This page was used to get the weird weather coords to real ones (lmao look at th
 
 `index.html` Parsed by Go's [html/template](https://pkg.go.dev/html/template) or another templating tool
 
-[filename](/example_htmx_raster/golang/index.html ':include :type=code :fragment=demo')
+[filename](/example_htmx_raster/golang/index.html ':include :type=code :fragment=demo :omitFragmentLine')
 
 `map.go`
 
