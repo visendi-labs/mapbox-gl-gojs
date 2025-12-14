@@ -13,4 +13,5 @@
     * [Popups + flyTo](/example8.md)
     * [Raster images](/example_htmx_raster.md)
     * [Add geo content to map (Mapbox-GL-Draw)](/example_ssr_extension_draw.md)
+    * [K-means](/example_htmx_kmeans.md)
 * [About the docs](/about.md)

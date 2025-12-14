@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css' rel='stylesheet' />
+    <link
+        href="https://cdn.jsdelivr.net/combine/npm/daisyui@5/base/rootscrollgutter.css,npm/daisyui@5/base/scrollbar.css,npm/daisyui@5/base/rootcolor.css,npm/daisyui@5/base/rootscrolllock.css,npm/daisyui@5/base/reset.css,npm/daisyui@5/base/svg.css,npm/daisyui@5/base/properties.css,npm/daisyui@5/components/range.css,npm/daisyui@5/components/card.css,npm/daisyui@5/colors/states-extended.css,npm/daisyui@5/colors/states.css,npm/daisyui@5/colors/properties.css,npm/daisyui@5/theme/light.css"
+        rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
+</head>
+
+<body style="padding:0; margin:0" hx-ext="fake-backend">
+    <div id="map" style="width:100vw; height:100vh;"></div>
+    <div class="card bg-base-100 shadow absolute m-2 left-0 top-0">
+        <div class="card-body">
+            <div class="card-title">Cluster lines</div>
+            <form hx-get="/kmean-lines" hx-trigger="input" hx-swap="beforeend" hx-target="body">
+                <input type="range" class="range" name="k" value="0" min="1" max="15" step="1">
+            </form>
+            <div class="card-title">Cluster points</div>
+            <form hx-get="/kmean-points" hx-trigger="input" hx-swap="beforeend" hx-target="body">
+                <input type="range" class="range" name="k" value="0" min="1" max="15" step="1">
+            </form>
+        </div>
+    </div>
+    <script src="../../wasm_exec.js"></script>
+    <script>
+        const go = new Go(); // defined in wasm_exec.js
+
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject)
+            .then((result) => {
+                go.run(result.instance);
+                let s = document.createElement("script")
+                s.textContent += example()
+                document.body.appendChild(s)
+            });
+    </script>
+    <script>
+        htmx.defineExtension('fake-backend', {
+            onEvent: function (name, evt) {
+                if (name === "htmx:beforeRequest") {
+                    let k = evt.detail.requestConfig.parameters.get("k")
+                    Object.defineProperty(evt.detail.xhr, "status", { value: 200, writable: false });
+                    evt.detail.keepIndicators = true; // prevent indicator cleanup when indicators will not be generated
+                    let resp = undefined
+                    if (evt.detail.pathInfo.requestPath == "/kmean-points") resp = kmeanPoints(k)
+                    else if (evt.detail.pathInfo.requestPath == "/kmean-lines") resp = kmeanLines(k)
+                    evt.detail.serverResponse = resp
+                    evt.detail.xhr.onload();
+                    return false;
+                }
+            },
+        })
+    </script>
+</body>
+
+</html>
