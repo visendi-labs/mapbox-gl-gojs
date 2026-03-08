@@ -9,7 +9,7 @@
     * [Fill/polygon](/example_multipoly.md)
     * [Mapbox-GL-Draw](/example_extension_draw.md)
 * Examples HTMX Interactive Serverside Rendering
-    * [Line distance filter](/example7.md)
+    * [Line distance filter](/example_htmx_line_filter.md)
     * [Popups + flyTo](/example8.md)
     * [Raster images](/example_htmx_raster.md)
     * [Add geo content to map (Mapbox-GL-Draw)](/example_ssr_extension_draw.md)

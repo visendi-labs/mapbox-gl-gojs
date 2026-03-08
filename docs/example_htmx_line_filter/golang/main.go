@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
-	"github.com/visendi-labs/mapbox-gl-gojs/docs/example7/common"
+	"github.com/visendi-labs/mapbox-gl-gojs/docs/example_htmx_line_filter/common"
 )
 
 // / ### [demo]

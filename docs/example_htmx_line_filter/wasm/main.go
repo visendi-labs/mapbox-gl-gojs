@@ -5,7 +5,7 @@ package main
 import (
 	"syscall/js"
 
-	"github.com/visendi-labs/mapbox-gl-gojs/docs/example7/common"
+	"github.com/visendi-labs/mapbox-gl-gojs/docs/example_htmx_line_filter/common"
 )
 
 var Token = "<token>"
