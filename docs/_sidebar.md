@@ -6,7 +6,7 @@
     * [Heatmap](/example_heatmap.md)
     * [Popups + Map config](/example_popup_config.md)
     * [Points/symbols](/example6.md)
-    * [Fill/polygon](/example6.1.md)
+    * [Fill/polygon](/example_multipoly.md)
     * [Mapbox-GL-Draw](/example_extension_draw.md)
 * Examples HTMX Interactive Serverside Rendering
     * [Line distance filter](/example7.md)

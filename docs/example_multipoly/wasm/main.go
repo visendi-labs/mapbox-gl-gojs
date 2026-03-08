@@ -5,7 +5,7 @@ package main
 import (
 	"syscall/js"
 
-	"github.com/visendi-labs/mapbox-gl-gojs/docs/example6.1/common"
+	"github.com/visendi-labs/mapbox-gl-gojs/docs/example_multipoly/common"
 )
 
 var Token = "<token>"
