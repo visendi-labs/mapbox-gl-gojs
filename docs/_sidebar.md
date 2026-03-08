@@ -4,7 +4,7 @@
     * [Lines](/example_lines.md)
     * [Hover lines](/example_hover.md)
     * [Heatmap](/example_heatmap.md)
-    * [Popups + Map config](/example5.md)
+    * [Popups + Map config](/example_popup_config.md)
     * [Points/symbols](/example6.md)
     * [Fill/polygon](/example6.1.md)
     * [Mapbox-GL-Draw](/example_extension_draw.md)

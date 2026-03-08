@@ -5,7 +5,7 @@ package main
 import (
 	"syscall/js"
 
-	"github.com/visendi-labs/mapbox-gl-gojs/docs/example5/common"
+	"github.com/visendi-labs/mapbox-gl-gojs/docs/example_popup_config/common"
 )
 
 var Token = "<token>"
