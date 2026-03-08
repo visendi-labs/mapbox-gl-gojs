@@ -10,7 +10,7 @@
     * [Mapbox-GL-Draw](/example_extension_draw.md)
 * Examples HTMX Interactive Serverside Rendering
     * [Line distance filter](/example_htmx_line_filter.md)
-    * [Popups + flyTo](/example8.md)
+    * [Popups + flyTo](/example_htmx_popups.md)
     * [Raster images](/example_htmx_raster.md)
     * [Add geo content to map (Mapbox-GL-Draw)](/example_ssr_extension_draw.md)
     * [K-means Geo](/example_htmx_kmeans.md)
