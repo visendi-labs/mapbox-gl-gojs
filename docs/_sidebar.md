@@ -2,7 +2,7 @@
 * [Docs](/docs.md)
 * Examples
     * [Lines](/example_lines.md)
-    * [Hover lines](/example3.md)
+    * [Hover lines](/example_hover.md)
     * [Heatmap](/example4.md)
     * [Popups + Map config](/example5.md)
     * [Points/symbols](/example6.md)

@@ -5,7 +5,7 @@ package main
 import (
 	"syscall/js"
 
-	"github.com/visendi-labs/mapbox-gl-gojs/docs/example3/common"
+	"github.com/visendi-labs/mapbox-gl-gojs/docs/example_hover/common"
 )
 
 var Token = "<token>"
