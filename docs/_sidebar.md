@@ -3,7 +3,7 @@
 * Examples
     * [Lines](/example_lines.md)
     * [Hover lines](/example_hover.md)
-    * [Heatmap](/example4.md)
+    * [Heatmap](/example_heatmap.md)
     * [Popups + Map config](/example5.md)
     * [Points/symbols](/example6.md)
     * [Fill/polygon](/example6.1.md)
