@@ -1,7 +1,7 @@
 * [Home](/)
 * [Docs](/docs.md)
 * Examples
-    * [Lines](/example2.md)
+    * [Lines](/example_lines.md)
     * [Hover lines](/example3.md)
     * [Heatmap](/example4.md)
     * [Popups + Map config](/example5.md)
@@ -13,5 +13,5 @@
     * [Popups + flyTo](/example8.md)
     * [Raster images](/example_htmx_raster.md)
     * [Add geo content to map (Mapbox-GL-Draw)](/example_ssr_extension_draw.md)
-    * [K-means](/example_htmx_kmeans.md)
+    * [K-means Geo](/example_htmx_kmeans.md)
 * [About the docs](/about.md)

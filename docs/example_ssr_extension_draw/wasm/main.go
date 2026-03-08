@@ -8,7 +8,7 @@ import (
 	"github.com/visendi-labs/mapbox-gl-gojs/docs/example_ssr_extension_draw/common"
 )
 
-var Token = "<token>"
+var Token = "<token>" 
 
 func main() {
 	example := func(this js.Value, args []js.Value) any {

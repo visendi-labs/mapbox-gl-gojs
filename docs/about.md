@@ -1,6 +1,6 @@
 # Notes on docs
 - Built using https://docsify.js.org/#/.
-- In the repo locally, from `/docs` folder, run: `docsify serve`. How to install docsify: https://docsify.js.org/#/quickstart.
+- To run the docs locally: in the repo, from `/docs` folder, run: `docsify serve`. How to install docsify: https://docsify.js.org/#/quickstart.
     - Literal Go code run in your browser, it's compiled to WASM.
     - You'll need to WASM-compile all the Go code (`map.go` in `/common` in the example folders) first. Run `./wasm_compile_all.sh` inside `/docs`. It will output `main.wasm` files in the example folders, which will be picked up by the docsify HTML example files. See more below on WASM.
         - Before you do this you need to export a Mapbox access token, to be picked up by the Go/WASM code. Run `export MAPBOX_ACCESS_TOKEN=pk.eyJ1I...`.
@@ -12,4 +12,5 @@
         - The browser won't execute a JS HTML string with content put straight in the DOM (added like `.innerHTML += content`). However, it will execute JS code if put into a `document.createElement("script")`. Mapbox-GL-GOJS supports wrapping everything in `<script>` tags (`mapboxglgojs.NewScript(...)`, use it!) but that didn't really work in some of the docs web examples (without resorting to like `eval` or some string parsing).
 - _"DDD"_, docs driven development
     - The developments of this project has been driven kinda by this docs page and it's examples.
+- Inspired by https://github.com/go-echarts/go-echarts
 
