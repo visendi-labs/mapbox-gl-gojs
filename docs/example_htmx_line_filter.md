@@ -6,7 +6,7 @@
 
 `index.html` Parsed by Go's [html/template](https://pkg.go.dev/html/template) or another templating tool
 
-[filename](/example_htmx_line_filter/golang/index.html ':include :type=code :fragment=demo')
+[filename](/example_htmx_line_filter/golang/index.html ':include :type=code :fragment=demo :omitFragmentLine')
 
 
 
