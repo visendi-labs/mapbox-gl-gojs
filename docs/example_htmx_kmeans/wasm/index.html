@@ -26,17 +26,7 @@
         </div>
     </div>
     <script src="../../wasm_exec.js"></script>
-    <script>
-        const go = new Go(); // defined in wasm_exec.js
-
-        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject)
-            .then((result) => {
-                go.run(result.instance);
-                let s = document.createElement("script")
-                s.textContent += example()
-                document.body.appendChild(s)
-            });
-    </script>
+    <script src="../../load_main_wasm_example.js"></script>
     <script>
         htmx.defineExtension('fake-backend', {
             onEvent: function (name, evt) {

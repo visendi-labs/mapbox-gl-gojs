@@ -404,6 +404,13 @@ func NewMapSourceUpdateImageUrl(id string, url string) EnclosedSnippetCollection
 	)
 }
 
+func NewMapSetPaintProperty(id, key string, value any) EnclosedSnippetCollectionRenderable {
+	return NewEnclosedSnippetCollection(
+		`map.setPaintProperty("{{.Data.id}}", "{{.Data.key}}", {{.Data.value}});`,
+		map[string]any{"id": id, "key": key, "value": value},
+	)
+}
+
 func NewMapRemoveSource(sourceId string) EnclosedSnippetCollectionRenderable {
 	return func(rc RenderConfig) *EnclosedSnippetCollection {
 		return NewEnclosedSnippetCollection(
