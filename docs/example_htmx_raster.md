@@ -5,7 +5,7 @@ This page was used to get the weird weather coords to real ones (lmao look at th
 
 [](example_htmx_raster/wasm/index.html ':include :type=iframe width=100% height=500px')
 
-`index.html` Parsed by Go's [html/template](https://pkg.go.dev/html/template) or another templating tool
+`index.html` Parsed by Go's [html/template](https://pkg.go.dev/html/template) or similar templating tool
 
 [filename](/example_htmx_raster/golang/index.html ':include :type=code :fragment=demo :omitFragmentLine')
 
