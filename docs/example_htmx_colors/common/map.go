@@ -26,21 +26,12 @@ func Example(token string) string {
 		fc.Append(geojson.NewFeature(line))
 	}
 	return mb.NewGroup(
-		mb.NewMap(mb.Map{
-			Container:   "map",
-			AccessToken: token,
-		}),
+		mb.NewMap(mb.Map{Container: "map", AccessToken: token}),
 		mb.NewMapOnLoad(
 			mb.NewMapAddLayer(mb.MapLayer{
-				Id:   "lines",
-				Type: "line",
-				Source: mb.MapSource{
-					Type: "geojson",
-					Data: *fc,
-				},
-				Paint: mb.MapLayerPaint{
-					LineWidth: 5,
-				},
+				Id: "lines", Type: "line",
+				Source: mb.MapSource{Type: "geojson", Data: *fc},
+				Paint:  mb.MapLayerPaint{LineWidth: 5},
 			}),
 		),
 	).MustRenderDefault()
